@@ -100,11 +100,12 @@ document.addEventListener('DOMContentLoaded',()=>{
 /* ---------- Modal Historial de cambios del usuario ---------- */
 function openHist(id){
   const u=USERS.find(x=>x.id===id);
-  $('hTitle').textContent='Historial · '+u.nombre;
-  $('hBody').innerHTML = u.hist.length ? '<div class="tl">'+u.hist.map(h=>`<div class="tl-i"><span class="tl-d"></span><div style="flex:1"><b>${esc(h.by)}</b> <small>· ${h.t}</small>${h.ch.map(c=>`<div class="tl-v"><small>${c.f}:</small> <s>${esc(c.a)}</s> <span class="arrow">${icon('chevron')}</span> <b>${esc(c.d)}</b></div>`).join('')}</div></div>`).join('')+'</div>' : '<div class="empty">Sin cambios registrados</div>';
+  // Cada entrada del historial puede traer varios campos: se muestra uno por fila
+  const items=u.hist.flatMap(h=>h.ch.map(c=>({ field:c.f, before:c.a, after:c.d, date:h.t, user:h.by })));
+  $('hBox').innerHTML=histModal({ title:'Historial de cambios', sub:u.nombre+' · '+u.rol, items });
+  $('hBox').querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>$('hModal').classList.remove('open'));
   $('hModal').classList.add('open');
 }
 document.addEventListener('DOMContentLoaded',()=>{
-  $('hClose').onclick=$('hOk').onclick=()=>$('hModal').classList.remove('open');
   $('hModal').addEventListener('click',e=>{ if(e.target===$('hModal')) $('hModal').classList.remove('open'); });
 });

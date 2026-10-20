@@ -187,7 +187,7 @@ function vendors(L){
   requestAnimationFrame(()=>document.querySelectorAll('#vBody .bar i').forEach(e=>e.style.width=e.dataset.w+'%'));
 }
 function cols(L){
-  const ks=Object.keys(CATS), cnt=ks.map(k=>L.filter(c=>c.cat===k).length), top=Math.max(10,Math.ceil(Math.max(...cnt)/5)*5);
+  const ks=Object.keys(CATS), cnt=ks.map(k=>L.filter(c=>c.cat===k).length), top=Math.max(8,Math.ceil(Math.max(...cnt)/4)*4);
   $('cols').innerHTML=`<div class="grid">${[top,top*.75,top*.5,top*.25,0].map(v=>`<i><b>${Math.round(v)}</b></i>`).join('')}</div>`+
     ks.map((k,i)=>`<div class="col" style="--c:${CATS[k].c}" data-tip="${tipC(k,L)}" tabindex="0"><div class="b" data-h="${cnt[i]*100/top}"><span class="v">${cnt[i]}</span></div></div>`).join('');
   $('xl').innerHTML=ks.map(k=>`<span>${k}</span>`).join('');
@@ -291,16 +291,15 @@ $('cm').addEventListener('click',e=>{ if(e.target===$('cm')) closeCm(); });
 document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeCm(); });
 function openHist(id){
   const c=CL.find(x=>x.id===id), ev=[];
-  // Eventos de ejemplo derivados del cliente (determinista) + cambios reales de esta sesión
-  (LOG[id]||[]).forEach(l=>ev.push({t:l.t,ic:'pencil',h:'Datos actualizados',d:l.ch.map(x=>`${x.f}: <s>${x.a}</s> → <b>${x.d}</b>`).join('<br>')}));
-  const d=new Date(c.date+'T12:00'); const f=n=>{const x=new Date(d);x.setDate(x.getDate()-n);return x.toLocaleDateString('es-PE');};
-  ev.push({t:d.toLocaleDateString('es-PE'),ic:'cart',h:'Último pedido · '+c.pay,d:`Pedido por ${money(Math.round(c.amount/c.orders))} registrado por ${c.vendor}`},
-          {t:f(9),ic:'message',h:'Conversación por '+c.canal,d:c.att?'Cliente atendido':'Sin respuesta del cliente'},
-          {t:f(24),ic:'trend',h:'Calificación: '+c.cat,d:'Asignada por '+c.vendor},
-          {t:f(60),ic:'users',h:'Cliente registrado',d:'Vendedor asignado: '+c.vendor});
-  showCm(`<div class="modal-h"><h3>Historial · ${c.name}</h3><button class="icon-btn" onclick="closeCm()">${icon('x')}</button></div>
-  <div class="modal-b"><div class="hl">${ev.map(e=>`<div class="hi"><span class="hd">${icon(e.ic)}</span><div><b>${e.h}</b> <small>· ${e.t}</small><div class="hx">${e.d}</div></div></div>`).join('')}</div></div>
-  <div class="modal-f"><button class="btn btn-primary" onclick="closeCm()">Cerrar</button></div>`);
+  // Cambios reales hechos en esta sesión (uno por campo) + eventos de ejemplo del cliente
+  (LOG[id]||[]).forEach(l=>l.ch.forEach(x=>ev.push({ field:x.f, before:x.a, after:x.d, date:l.t.replace(',',''), user:getUser().name })));
+  const dt=new Date(c.date+'T12:00'), f=n=>{const x=new Date(dt);x.setDate(x.getDate()-n);return x.toLocaleDateString('es-PE');};
+  ev.push({ icon:'cart',  field:'Último pedido · '+c.pay, text:`Pedido por ${money(Math.round(c.amount/c.orders))}`, date:dt.toLocaleDateString('es-PE'), user:c.vendor },
+          { icon:'message', field:'Conversación por '+c.canal, text:c.att?'Cliente atendido':'Sin respuesta del cliente', date:f(9), user:c.vendor },
+          { icon:'trend', field:'Calificación: '+c.cat, text:'Calificación asignada', date:f(24), user:c.vendor },
+          { icon:'users', field:'Cliente registrado', text:'Vendedor asignado: '+c.vendor, date:f(60), user:c.vendor });
+  showCm(histModal({ title:'Historial del cliente', sub:c.name, items:ev }));
+  $('cmBox').querySelectorAll('[data-close]').forEach(b=>b.onclick=closeCm);
 }
 function openEdit(id){
   const c=CL.find(x=>x.id===id), opt=(a,v)=>a.map(x=>`<option ${x===v?'selected':''}>${x}</option>`).join('');

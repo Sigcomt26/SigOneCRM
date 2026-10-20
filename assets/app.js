@@ -97,3 +97,30 @@ document.addEventListener('DOMContentLoaded',()=>{
   if (document.getElementById('sidebar')) renderShell();
   hydrateIcons();
 });
+
+
+/* =====================================================================
+   Ventana de historial (componente compartido: Clientes, Mantenedores, Dashboard)
+   histModal({title, sub, items:[{icon?, field, before, after, text, date, user}]}) → HTML del modal
+   Cada botón con [data-close] debe cerrarse desde la página que lo usa.
+   ===================================================================== */
+const FIELD_ICON = { 'Calificación':'trend','Cargo':'briefcase','Vendedor':'user','Empresa':'building','Celular':'phone','Correo':'mail','Dirección':'pin','Etapa':'funnel','Próxima':'calendar','Horario':'clock','Canales':'message','Líneas':'package','Productos':'cart','Observaciones':'pencil','Rol':'shield','Estado':'check','Nombre':'user','Usuario':'plus','Forma':'cart' };
+function fieldIcon(label=''){ const k=Object.keys(FIELD_ICON).find(k=>label.startsWith(k)); return FIELD_ICON[k]||'history'; }
+function histModal({title='Historial de cambios', sub='', items=[]}){
+  const ini = n => (n||'').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+  const last = items[0];
+  const rows = items.map(h=>{
+    const [d,...t] = (h.date||'').split(' ');
+    const body = h.text!=null
+      ? `<div class="hm-tx">${esc(h.text)}</div>`
+      : `<div class="hm-v"><span class="hm-b">${esc(h.before)}</span>${icon('back','hm-arr')}<span class="hm-a">${esc(h.after)}</span></div>`;
+    return `<li class="hm-i"><span class="hm-n">${icon(h.icon||fieldIcon(h.field||''))}</span>
+      <div class="hm-c"><div class="hm-t"><b>${esc(h.field)}</b><time>${d}${t.length?' · '+t.join(' '):''}</time></div>${body}
+        ${h.user?`<div class="hm-u"><span class="hm-av">${ini(h.user)}</span>${esc(h.user)}</div>`:''}</div></li>`;
+  }).join('');
+  return `<div class="hm-h"><span class="hm-tile">${icon('history')}</span><div class="hm-ti"><h3>${esc(title)}</h3>${sub?`<small>${esc(sub)}</small>`:''}</div>
+      <button type="button" class="icon-btn" data-close aria-label="Cerrar">${icon('x')}</button></div>
+    <div class="hm-b0">${items.length?`<div class="hm-sum"><span><b>${items.length}</b> ${items.length===1?'registro':'registros'}</span>${last&&last.date?`<span>Último: <b>${last.date.split(' ')[0]}</b>${last.user?' · '+esc(last.user):''}</span>`:''}</div><ol class="hm-l">${rows}</ol>`
+      : `<div class="hm-empty">${icon('history')}<b>Sin cambios registrados</b><small>Cuando alguien edite esta sección, el cambio aparecerá aquí.</small></div>`}</div>
+    <div class="modal-f"><button type="button" class="btn btn-ghost" data-close>Cerrar</button></div>`;
+}

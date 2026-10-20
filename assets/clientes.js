@@ -176,12 +176,8 @@ function openHistory(sec='all'){
   hSec=sec; const c=current;
   const draw=()=>{
     const list=histOf(c).filter(h=>hSec==='all'||h.sec===hSec);
-    $('cmBox').innerHTML=`<div class="modal-h"><h3>Historial · ${hSec==='all'?'Todo':SECTIONS[hSec].title}</h3><button type="button" class="icon-btn" data-close aria-label="Cerrar"><i data-icon="x"></i></button></div>
-      <div class="modal-b"><p class="h-sub">${esc(c.nombre)}</p>
-      <div class="tl">${list.length?list.map(h=>`<div class="tl-i"><div class="tl-d"></div><div><b>${h.campo}</b>
-        <div class="tl-v"><s>${esc(h.antes)}</s> ${icon('chevron','arrow')} <strong>${esc(h.desp)}</strong></div><small>${h.f} · ${esc(h.u)}</small></div></div>`).join(''):`<div class="empty">${icon('history')}<div>Sin cambios registrados en esta sección</div></div>`}</div></div>
-      <div class="modal-f"><button class="btn btn-ghost" data-close>Cerrar</button></div>`;
-    hydrateIcons($('cmBox'));
+    $('cmBox').innerHTML=histModal({ title:'Historial · '+(hSec==='all'?'Todo':SECTIONS[hSec].title), sub:c.nombre,
+      items:list.map(h=>({ field:h.campo, before:h.antes, after:h.desp, date:h.f, user:h.u })) });
     $('cmBox').querySelectorAll('[data-close]').forEach(b=>b.onclick=closeModal);
   };
   $('cmodal').classList.add('open'); draw();
