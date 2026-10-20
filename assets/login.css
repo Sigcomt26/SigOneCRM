@@ -1,0 +1,62 @@
+/* =====================================================================
+   SigOne CRM · Login — valores copiados de SigOne Legal
+   (identity sigone/wwwroot/css/epson-auth-shell.css)
+   Fuentes: Plus Jakarta Sans (texto) + Outfit (títulos y wordmark)
+   Layout: panel izquierdo 60 % · derecho 40 % · overlay negro .66
+   ===================================================================== */
+:root{
+  --sigone-orange:#f27618; --sigone-orange-dark:#e4640f; --sigone-ink:#111526;
+  --sigone-muted:#9aa0aa; --sigone-border:#e6e8ee; --sigone-danger:#dc3545;
+}
+html,body{width:100%;min-width:320px;min-height:100%;font-family:'Plus Jakarta Sans',sans-serif;color:var(--sigone-ink);background:#fff;overflow:hidden}
+body.sigone-auth-page{display:flex;align-items:stretch;width:100%;min-height:100svh}
+button,input{font:inherit}
+
+/* ---------- Panel izquierdo ---------- */
+.left-panel{position:relative;flex:0 0 60%;min-width:0;min-height:100svh;overflow:hidden;background:#111;isolation:isolate}
+.left-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0}
+.left-overlay{position:absolute;inset:0;z-index:1;background:rgba(0,0,0,.66);pointer-events:none}
+.left-content{position:absolute;inset:0;z-index:2;display:flex;align-items:center;justify-content:center;padding:clamp(24px,4vw,56px);text-align:center}
+.sigone-hero{width:min(610px,84%);color:#fff;transform:translateY(-3px)}
+.sigone-brandline{display:flex;align-items:center;justify-content:center;width:100%;margin-bottom:23px}
+.sigone-brand-logo{display:block;width:clamp(260px,24vw,391px);max-width:100%;height:auto;object-fit:contain;filter:drop-shadow(0 3px 14px rgba(0,0,0,.18));user-select:none;pointer-events:none}
+.left-title{margin:0 0 25px;font-family:'Outfit',sans-serif;font-size:clamp(31px,3.1vw,48px);font-weight:800;line-height:1.05;letter-spacing:-.055em;color:#fff;text-shadow:0 3px 14px rgba(0,0,0,.15)}
+.left-sub{margin:0 auto;max-width:520px;font-size:clamp(12px,.96vw,16px);font-weight:600;line-height:1.55;color:rgba(255,255,255,.84)}
+
+/* ---------- Panel derecho ---------- */
+.right-panel{position:relative;flex:0 0 40%;min-width:0;min-height:100svh;display:flex;align-items:center;justify-content:center;background:#fff;border-top:4px solid var(--sigone-orange);padding:clamp(28px,4vw,54px)}
+.login-box{width:100%;max-width:252px;margin-top:-7px}
+.login-header{margin-bottom:23px}
+.login-title{margin:0 0 7px;font-family:'Outfit',sans-serif;font-size:20px;font-weight:800;line-height:1.1;letter-spacing:-.035em;color:var(--sigone-ink)}
+.login-title-line{display:block;width:30px;height:3px;margin-bottom:17px;border-radius:999px;background:var(--sigone-orange)}
+.login-sub{margin:0;font-size:9px;font-weight:500;line-height:1.5;color:var(--sigone-muted)}
+.form-group{margin-bottom:24px}
+.f-label{display:block;margin-bottom:9px;font-size:8px;font-weight:800;line-height:1.2;letter-spacing:.095em;text-transform:uppercase;color:var(--sigone-orange-dark)}
+.f-wrap{position:relative}
+.f-input{width:100%;height:27px;padding:0 0 9px;border:0;border-bottom:1px solid var(--sigone-border);border-radius:0;outline:0;background:transparent;color:#2b2f3d;font-family:'Plus Jakarta Sans',sans-serif;font-size:10px;font-weight:500;line-height:1.2;transition:border-color .18s,box-shadow .18s}
+.f-input::placeholder{color:#aeb3bd;opacity:1}
+.f-input:focus{border-bottom-color:var(--sigone-orange);box-shadow:0 1px 0 0 var(--sigone-orange)}
+.f-input--password{padding-right:32px}
+.eye-btn{position:absolute;top:2px;right:0;display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;padding:0;border:0;border-radius:50%;background:transparent;color:#a6abb5;cursor:pointer;font-size:14px;transition:color .15s,background-color .15s}
+.eye-btn:hover{color:var(--sigone-orange);background:rgba(242,118,24,.06)}
+.login-options{display:flex;align-items:center;margin:-2px 0 17px}
+.remember{display:inline-flex;align-items:center;gap:7px}
+.remember input{width:12px;height:12px;accent-color:var(--sigone-orange);cursor:pointer}
+.remember label{color:#6f7682;font-size:9px;font-weight:500;line-height:1.2;cursor:pointer;user-select:none}
+.btn-login{width:100%;min-height:25px;padding:8px 12px;border:0;border-radius:7px;background:var(--sigone-orange);color:#fff;box-shadow:0 13px 26px rgba(242,118,24,.24);font-family:'Plus Jakarta Sans',sans-serif;font-size:9px;font-weight:800;line-height:1.15;letter-spacing:-.005em;cursor:pointer;transition:background-color .18s,box-shadow .18s,transform .16s}
+.btn-login:hover{background:var(--sigone-orange-dark);box-shadow:0 16px 30px rgba(242,118,24,.30);transform:translateY(-1px)}
+.btn-login:active{transform:none;box-shadow:0 9px 20px rgba(242,118,24,.20)}
+.login-footer{margin-top:19px;text-align:center;color:#a0a5ae;font-size:9px;font-weight:500;line-height:1.5}
+.login-footer a{color:var(--sigone-orange-dark);font-weight:800;text-decoration:none}
+.login-footer a:hover{text-decoration:underline}
+.login-err{color:var(--sigone-danger);font-size:10.5px;font-weight:500;margin:-12px 0 12px}
+.mob-brand{display:none}
+
+/* ---------- Responsive ---------- */
+@media (max-width:992px){
+  .left-panel{display:none}
+  .right-panel{flex:1 1 100%}
+  .mob-brand{display:flex;margin-bottom:26px}
+  .mob-brand .brand-text{color:var(--sigone-ink)}
+}
+@media (prefers-reduced-motion:reduce){.left-video{display:none}}

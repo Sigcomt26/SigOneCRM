@@ -1,0 +1,373 @@
+/* =====================================================================
+   SigOne CRM · Estilos compartidos
+   Basado en el lenguaje visual de SigOne Legal (SPL): sidebar oscuro,
+   acento naranja, tarjetas blancas redondeadas, tipografía Plus Jakarta Sans.
+   ===================================================================== */
+
+/* ---------- 1. Tokens de diseño ---------- */
+:root{
+  --orange:#F47920; --orange-600:#D4620A; --orange-100:#FFE3CE; --orange-50:#FFF3E8;
+  --navy:#1A1F2E; --navy-2:#252B3D; --navy-3:#303853;
+  --bg:#F5F6FA; --card:#FFFFFF; --text:#1F2937; --muted:#6B7280; --border:#E5E7EB;
+  --green:#16A34A; --green-50:#E8F8EE;
+  --blue:#3B6FE0;  --blue-50:#EAF0FF;
+  --amber:#C77D00; --amber-50:#FFF3D1;
+  --red:#DC2626;   --red-50:#FDECEC;
+  --radius:14px; --radius-sm:10px;
+  --shadow:0 10px 25px rgba(15,23,42,.08);
+  --side-w:260px; --side-w-collapsed:76px; --top-h:76px;
+  /* Tipografía idéntica a SigOne Legal: DM Sans (cuerpo) + Sora (títulos) */
+  --font:'DM Sans','Segoe UI',sans-serif; --font-display:'Sora','DM Sans',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:var(--font);color:var(--text);background:var(--bg);font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none}
+a{color:inherit;text-decoration:none}
+svg.ic{width:1em;height:1em;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+[hidden]{display:none!important}
+
+/* ---------- 2. Logo SigOne CRM ---------- */
+.brand{display:flex;align-items:center;gap:12px;white-space:nowrap}
+.brand-mark{width:42px;height:42px;flex:none;filter:drop-shadow(0 6px 12px rgba(244,123,32,.35))}
+.brand-text{font-weight:800;font-size:21px;letter-spacing:-.4px;color:#fff;line-height:1}
+.brand-text b{color:var(--orange);font-weight:800}
+
+/* ---------- 3. Shell: sidebar + topbar ---------- */
+.app{display:flex;height:100vh;overflow:hidden}
+.sidebar{width:var(--side-w);background:var(--navy);color:#C9CEDB;display:flex;flex-direction:column;flex:none;transition:width .22s ease;z-index:30}
+.sidebar .side-head{height:var(--top-h);padding:0 20px;display:flex;align-items:center;border-bottom:1px solid rgba(255,255,255,.07)}
+.sidebar nav{padding:16px 12px;flex:1;display:flex;flex-direction:column;gap:6px;overflow:auto}
+.nav-label{font-size:11px;font-weight:700;letter-spacing:.9px;color:#6F7894;padding:6px 12px 4px;text-transform:uppercase}
+.nav-item{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;font-weight:600;color:#AEB5C7;transition:.15s;white-space:nowrap}
+.nav-item .ic{font-size:20px}
+.nav-item:hover{background:var(--navy-2);color:#fff}
+.nav-item.active{background:rgba(244,123,32,.16);color:var(--orange)}
+.nav-item.soon{opacity:.55;cursor:not-allowed}
+.nav-item .tag{margin-left:auto;font-size:10px;font-weight:700;background:var(--navy-3);color:#AEB5C7;padding:2px 8px;border-radius:99px}
+.sidebar .side-foot{border-top:1px solid rgba(255,255,255,.07);padding:12px}
+/* Sidebar colapsado (botón hamburguesa) */
+body.side-collapsed .sidebar{width:var(--side-w-collapsed)}
+body.side-collapsed .brand-text,body.side-collapsed .nav-item span,body.side-collapsed .nav-item .tag,body.side-collapsed .nav-label{display:none}
+body.side-collapsed .sidebar .side-head{padding:0 17px}
+body.side-collapsed .nav-item{justify-content:center;padding:12px}
+
+.main{flex:1;min-width:0;display:flex;flex-direction:column}
+.topbar{height:var(--top-h);background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 24px;gap:8px;flex:none}
+.icon-btn{width:40px;height:40px;border-radius:10px;display:grid;place-items:center;font-size:22px;color:#3A4257;position:relative}
+.icon-btn:hover{background:var(--bg)}
+.top-tabs{display:flex;height:100%;margin-left:12px}
+.top-tab{display:flex;align-items:center;padding:0 18px;height:100%;font-weight:600;color:#4B5368;position:relative}
+.top-tab:hover{color:var(--orange)}
+.top-tab.active{color:var(--orange)}
+.top-tab.active::after{content:"";position:absolute;left:14px;right:14px;bottom:0;height:3px;border-radius:3px 3px 0 0;background:var(--orange)}
+.top-right{margin-left:auto;display:flex;align-items:center;gap:14px}
+.bell .dot{position:absolute;top:8px;right:9px;width:9px;height:9px;border-radius:50%;background:var(--orange);border:2px solid #fff}
+.user-box{text-align:right;line-height:1.25}
+.user-box small{display:block;color:var(--muted);font-size:12px}
+.user-box strong{display:block;font-size:14px}
+.user-box em{font-style:normal;display:inline-block;font-size:11.5px;font-weight:700;color:var(--orange-600)}
+.btn-logout{display:flex;align-items:center;gap:8px;border:1px solid var(--border);padding:9px 16px;border-radius:10px;font-weight:600;color:#3A4257;background:#fff}
+.btn-logout:hover{border-color:var(--orange);color:var(--orange)}
+.content{flex:1;overflow:auto;padding:26px 32px 32px}
+
+/* ---------- 4. Componentes ---------- */
+.page-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:20px;flex-wrap:wrap}
+.crumb{color:var(--muted);font-size:12.5px;font-weight:600;margin-bottom:6px;display:flex;gap:6px;align-items:center}
+.crumb b{color:var(--orange-600)}
+.page-head h1{font-size:26px;letter-spacing:-.5px;font-weight:800}
+.page-head p{color:var(--muted);margin-top:2px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow)}
+.card-h{display:flex;align-items:center;justify-content:space-between;padding:16px 20px 0}
+.card-h h3{font-size:15.5px;font-weight:800}
+.card-b{padding:14px 20px 18px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 18px;border-radius:10px;font-weight:700;transition:.15s;white-space:nowrap}
+.btn-primary{background:var(--orange);color:#fff;box-shadow:0 6px 16px rgba(244,123,32,.28)}
+.btn-primary:hover{background:var(--orange-600)}
+.btn-ghost{border:1px solid var(--border);background:#fff;color:#3A4257}
+.btn-ghost:hover{border-color:var(--orange);color:var(--orange)}
+.btn-sm{padding:7px 12px;font-size:13px;border-radius:8px}
+.link{color:var(--orange-600);font-weight:700;font-size:13px;display:inline-flex;align-items:center;gap:5px}
+.link:hover{text-decoration:underline}
+.field label{display:block;font-size:11.5px;font-weight:800;letter-spacing:.7px;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.input,.select,.textarea{width:100%;border:1px solid var(--border);background:#fff;border-radius:10px;padding:10px 12px;outline:none;transition:.15s}
+.input:focus,.select:focus,.textarea:focus{border-color:var(--orange);box-shadow:0 0 0 3px rgba(244,123,32,.14)}
+.search{position:relative}
+.search .ic{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#8A92A6;font-size:17px}
+.search .input{padding-left:38px}
+.badge{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:99px;font-size:12px;font-weight:700}
+.badge.orange{background:var(--orange-50);color:var(--orange-600)}
+.badge.green{background:var(--green-50);color:var(--green)}
+.badge.blue{background:var(--blue-50);color:var(--blue)}
+.badge.amber{background:var(--amber-50);color:var(--amber)}
+.badge.gray{background:#EEF0F5;color:#5A6379}
+.badge.red{background:var(--red-50);color:var(--red)}
+.avatar{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font-weight:800;color:#fff;flex:none;background:linear-gradient(135deg,#F9A25E,#F47B20)}
+.avatar.alt1{background:linear-gradient(135deg,#6C8DF0,#3B6FE0)}
+.avatar.alt2{background:linear-gradient(135deg,#46C27E,#16A34A)}
+.avatar.alt3{background:linear-gradient(135deg,#8B93A8,#5A6379)}
+.avatar.alt4{background:linear-gradient(135deg,#B68CF0,#7C4DD6)}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:20px}
+.kpi{padding:20px 22px}
+.kpi .l{font-size:11.5px;font-weight:800;letter-spacing:.8px;color:var(--muted);text-transform:uppercase}
+.kpi .n{font-size:34px;font-weight:800;letter-spacing:-1px;margin:6px 0 2px}
+.kpi .s{color:var(--muted);font-size:13px}
+.toast{position:fixed;right:24px;bottom:24px;background:var(--navy);color:#fff;padding:13px 18px;border-radius:12px;display:flex;gap:10px;align-items:center;font-weight:600;box-shadow:0 12px 30px rgba(0,0,0,.25);transform:translateY(20px);opacity:0;pointer-events:none;transition:.25s;z-index:100}
+.toast.show{transform:none;opacity:1}
+.toast .ic{color:#4ADE80;font-size:18px}
+.empty{text-align:center;color:var(--muted);padding:40px 20px}
+.empty .ic{font-size:36px;color:#C4C9D6;margin-bottom:8px}
+
+/* Modal */
+.modal-bg{position:fixed;inset:0;background:rgba(19,26,42,.5);backdrop-filter:blur(2px);display:none;align-items:center;justify-content:center;z-index:60;padding:20px}
+.modal-bg.open{display:flex}
+.modal{background:#fff;border-radius:18px;width:100%;max-width:520px;box-shadow:0 30px 70px rgba(0,0,0,.3);overflow:hidden}
+.modal-h{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid var(--border)}
+.modal-h h3{font-size:18px;font-weight:800}
+.modal-b{padding:20px 24px;display:grid;gap:16px}
+.modal-f{padding:16px 24px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:10px;background:#FAFBFD}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+
+/* ---------- 5. LOGIN ---------- */
+.login{display:grid;grid-template-columns:1.1fr 1fr;height:100vh;background:#fff}
+.login-hero{position:relative;overflow:hidden;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:48px;
+  background:radial-gradient(900px 500px at 15% 10%,rgba(244,123,32,.30),transparent 60%),radial-gradient(700px 500px at 90% 95%,rgba(59,111,224,.25),transparent 60%),linear-gradient(160deg,#0E1424,#182139 60%,#10172A)}
+.login-hero::before{content:"";position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.09) 1px,transparent 1.2px);background-size:26px 26px;mask-image:radial-gradient(circle at 50% 45%,#000,transparent 75%)}
+.hero-inner{position:relative;z-index:2}
+.hero-eyebrow{font-size:12px;letter-spacing:2.4px;font-weight:700;color:#C9CEDB;margin-bottom:18px;text-transform:uppercase}
+.hero-brand{display:flex;align-items:center;justify-content:center;gap:18px}
+.hero-brand .brand-mark{width:84px;height:84px}
+.hero-brand .name{text-align:left;line-height:1}
+.hero-brand .name h2{font-size:58px;font-weight:700;letter-spacing:-2px}
+.hero-brand .name h2 b{color:var(--orange);font-weight:800}
+.hero-brand .name span{display:block;margin-top:6px;font-size:17px;color:#C9CEDB;padding-left:4px}
+.login-hero h1{font-size:44px;letter-spacing:-1.8px;font-weight:800;margin:34px 0 12px}
+.login-hero p.sub{color:#D3D8E5;font-size:17px;font-weight:500}
+.float-card{position:absolute;z-index:1;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.13);backdrop-filter:blur(10px);border-radius:16px;padding:14px 18px;display:flex;gap:12px;align-items:center;text-align:left;font-size:13px;color:#E6E9F2}
+.float-card b{display:block;color:#fff;font-size:14px}
+.float-card .ico{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;background:rgba(244,123,32,.2);color:var(--orange);font-size:19px}
+.fc1{left:6%;bottom:9%;animation:float 7s ease-in-out infinite}
+.fc2{right:6%;top:10%;animation:float 8s ease-in-out infinite reverse}
+@keyframes float{50%{transform:translateY(-10px)}}
+.login-panel{position:relative;display:flex;align-items:center;justify-content:center;padding:40px;border-top:5px solid var(--orange)}
+.login-form{width:100%;max-width:400px}
+.login-form h2{font-size:32px;font-weight:800;letter-spacing:-1px}
+.login-form .bar{width:38px;height:3px;background:var(--orange);border-radius:3px;margin:8px 0 14px}
+.login-form .hint{color:var(--muted);font-size:15px;margin-bottom:28px}
+.lf{margin-bottom:22px}
+.lf label{display:block;font-size:12px;font-weight:800;letter-spacing:.9px;color:var(--orange-600);text-transform:uppercase;margin-bottom:6px}
+.lf .wrap{position:relative}
+.lf input{width:100%;background:#EEF3FD;border:0;border-bottom:2px solid var(--orange);padding:12px 44px 12px 12px;outline:none;font-size:15px;border-radius:4px 4px 0 0}
+.lf input:focus{background:#E4ECFC}
+.lf .eye{position:absolute;right:8px;top:50%;transform:translateY(-50%);color:#8A92A6;font-size:19px;padding:6px}
+.remember{display:flex;align-items:center;gap:10px;color:#4B5368;margin:-4px 0 22px;font-size:14.5px}
+.remember input{width:16px;height:16px;accent-color:var(--orange)}
+.btn-login{width:100%;padding:14px;font-size:15.5px;border-radius:10px;background:var(--orange);color:#fff;font-weight:800;box-shadow:0 10px 22px rgba(244,123,32,.3);transition:.15s}
+.btn-login:hover{background:var(--orange-600);transform:translateY(-1px)}
+.support{text-align:center;color:var(--muted);margin-top:20px;font-size:14.5px}
+.support a{color:var(--orange-600);font-weight:800}
+.login-err{color:var(--red);font-size:13px;font-weight:600;margin:-10px 0 14px}
+.login-mobile-brand{display:none}
+
+/* ---------- 6. Responsive ---------- */
+@media (max-width:1100px){.kpis{grid-template-columns:repeat(2,1fr)}.user-box small{display:none}}
+@media (max-width:900px){
+  .login{grid-template-columns:1fr}.login-hero{display:none}
+  .login-mobile-brand{display:flex;margin-bottom:28px}.login-mobile-brand .brand-text{color:var(--navy)}
+  .sidebar{position:fixed;inset:0 auto 0 0;transform:translateX(-100%);transition:transform .22s}
+  body.side-open .sidebar{transform:none}
+  .top-tab{padding:0 10px}.btn-logout span{display:none}.content{padding:18px 16px}
+}
+
+/* ---------- 7. Pulido moderno (capa final) ---------- */
+body{background:radial-gradient(900px 420px at 100% -10%,rgba(244,123,32,.07),transparent 60%),var(--bg)}
+.topbar{background:rgba(255,255,255,.82);backdrop-filter:saturate(1.4) blur(14px);border-bottom-color:rgba(231,233,240,.8)}
+.sidebar{background:linear-gradient(180deg,#141B2D,#0F1524)}
+.nav-item{position:relative;border-radius:14px}
+.nav-item.active{background:linear-gradient(90deg,rgba(244,123,32,.22),rgba(244,123,32,.06))}
+.nav-item.active::before{content:"";position:absolute;left:-12px;top:10px;bottom:10px;width:4px;border-radius:0 4px 4px 0;background:var(--orange)}
+.card{border-radius:18px;border-color:rgba(231,233,240,.9)}
+.btn{border-radius:12px}.btn-primary{background:linear-gradient(135deg,#F9893A,#EC6A0A)}
+.btn-primary:hover{background:linear-gradient(135deg,#F47B20,#DB5F05);transform:translateY(-1px)}
+.input,.select,.textarea{border-radius:12px;background:#FBFBFD}
+.badge{letter-spacing:.1px}
+.page-head h1{font-size:28px}
+.top-tab.active::after{height:3px;border-radius:3px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* ---------- 8. Login estilo SigOne Legal: foto de fondo + capa oscura ---------- */
+.login{grid-template-columns:1.5fr 1fr}
+/* Coloca tu foto en assets/login-bg.jpg (ej. equipo de ventas / reunión comercial). Si no existe, se ve el degradado. */
+.login-hero{background:
+  linear-gradient(rgba(10,14,26,.72),rgba(10,14,26,.78)),
+  url("login-bg.jpg") center/cover no-repeat,
+  radial-gradient(900px 500px at 15% 10%,rgba(244,123,32,.30),transparent 60%),
+  linear-gradient(160deg,#0E1424,#182139 60%,#10172A)}
+.login-hero::before{display:none}
+.hero-eyebrow{text-align:left;margin:0 0 6px 118px;font-size:12px;letter-spacing:1.6px;color:#E4E7F0}
+.hero-brand{justify-content:center}
+.login-hero h1{font-size:50px;letter-spacing:-2.4px;margin:30px 0 22px}
+.login-hero p.sub{font-size:18px;font-weight:600;letter-spacing:-.3px;color:#F1F3F8}
+.login-form{max-width:400px}
+
+/* Video de fondo del login */
+.hero-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0}
+.login-hero::after{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(rgba(10,14,26,.62),rgba(10,14,26,.74))}
+.hero-inner{z-index:2}
+@media (prefers-reduced-motion:reduce){.hero-video{display:none}}
+
+/* ---------- 9. Alineación con SigOne Legal (fuentes display, botones 9px, sidebar sólido) ---------- */
+h1,h2,h3,.page-head h1,.brand-text,.kpi .n,.stat .n,.card-h h3,.box-h h3,.pane-h b,.modal-h h3,.login-form h2,.login-hero h1,.hero-brand h2,.total-row b{font-family:var(--font-display)}
+.page-head h1{font-size:24px;font-weight:800;letter-spacing:-.3px}
+.login-hero h1{letter-spacing:-1.5px}.login-form h2{letter-spacing:-.5px}.hero-brand .name h2{letter-spacing:-1px}
+.sidebar{background:var(--navy)}
+.btn{border-radius:9px;font-weight:700}
+.btn-primary{background:linear-gradient(135deg,var(--orange),var(--orange-600));box-shadow:0 8px 18px rgba(244,121,32,.22)}
+.btn-primary:hover{background:linear-gradient(135deg,var(--orange),#C25A08)}
+.input,.select,.textarea{border-radius:9px}
+::-webkit-scrollbar{width:6px;height:6px}::-webkit-scrollbar-thumb{background:rgba(244,121,32,.3);border-radius:99px}
+
+/* Isotipo sin tile: se muestra directo sobre fondo oscuro */
+.brand-mark{filter:none}
+.sidebar .brand-mark{width:46px;height:46px}
+
+/* Logo oficial en el hero del login */
+.hero-logo{display:block;width:min(400px,70%);height:auto;margin:0 auto}
+
+/* ---------- 10. Re-base a medidas reales de SigOne Legal ----------
+   SPL se ve a ~125 % en pantalla; usamos sus mismos px CSS
+   (apps-layout.scss): sidebar 208/74, header 64, texto 13/14/15. */
+:root{--side-w:208px;--side-w-collapsed:74px;--top-h:64px;--navy:#171b27;--bg:#f6f7fb;--orange:#f47721;--orange-600:#e66a17;--border:#e2e8f0}
+body{font-size:14px;background:var(--bg)}
+.sidebar{background:#171b27}
+.sidebar .side-head{padding:0 16px}
+.sidebar nav{padding:12px 10px;gap:4px}
+.nav-label{font-size:10px;padding:6px 10px 4px}
+.nav-item{min-height:40px;padding:0 12px;gap:10px;border-radius:10px;font-size:13px;font-weight:400;color:#737987}
+.nav-item .ic{font-size:18px}
+.nav-item:hover{background:rgba(255,255,255,.05);color:#fff}
+.nav-item.active{background:rgba(244,119,33,.18);color:#f47721;font-weight:500}
+.nav-item .tag{font-size:9px;padding:1px 7px}
+.sidebar .brand-mark,.sidebar .side-head .brand-mark{width:34px;height:34px}
+body.side-collapsed .sidebar .side-head{padding:0 20px}
+body.side-collapsed .nav-item{padding:0;justify-content:center}
+.topbar{padding:0 28px;background:#fff;backdrop-filter:none;border-bottom:1px solid #e2e8f0}
+.icon-btn{width:38px;height:38px;font-size:19px}
+.top-tab{padding:0 16px;font-size:14px;font-weight:400;color:#4b5563}
+.top-tab:hover{color:#e66a17}
+.top-tab.active{color:#e66a17;font-weight:500}
+.top-tab.active::after{left:16px;right:16px;height:2px;border-radius:2px}
+.top-right{gap:12px}
+.user-box strong{font-size:15px;font-weight:700;color:#202532}
+.user-box em{font-size:12px;font-weight:600;color:#7a8394}
+.btn-logout{height:38px;padding:0 14px;font-size:14px;font-weight:500;border-radius:10px;border-color:#d7dce5}
+.content{padding:1rem 1.25rem 1.5rem}
+.crumb{font-size:12px}
+.page-head{margin-bottom:16px}
+.page-head h1{font-size:20px;font-weight:900;letter-spacing:-.02em;color:#202532}
+.page-head p{font-size:14px;color:#64748b}
+.card{border-radius:12px;box-shadow:0 4px 6px -1px rgba(0,0,0,.05)}
+.btn{font-size:13px;min-height:36px;padding:0 14px}
+.input,.select,.textarea{font-size:13px}
+.card-h h3,.box-h h3,.pane-h b{font-size:16px;font-weight:700}
+.kpi .n,.stat .n{font-size:32px;font-weight:800}
+
+/* ---------- 11. Marca CRM estilo SPL: tile + "CRM" naranja ---------- */
+.brand{gap:10px}
+.brand-mark,.sidebar .brand-mark,.sidebar .side-head .brand-mark{width:38px;height:38px;filter:none}
+.brand-text,.brand-text b{color:#F47721;font-weight:800;font-size:20px;letter-spacing:0}
+.login-mobile-brand .brand-text,.mob-brand .brand-text{color:#F47721}
+
+/* Tile del logo igual de grande que en SPL (≈54px) */
+.sidebar .side-head{padding:0 18px}
+.brand-mark,.sidebar .brand-mark,.sidebar .side-head .brand-mark{width:50px;height:50px}
+body.side-collapsed .sidebar .side-head{padding:0 12px}
+
+/* ---------- Cursor de mano en todo lo clicable ---------- */
+button,[role=button],a,label[for],select,summary,input[type=checkbox],input[type=radio],input[type=date],.sw,.tl-act,[data-h],[data-e],[data-edit],[data-hist],[data-del],[data-k],[data-sw],[data-r],[data-close],.act,.col,.nav-item,.top-tab,.icon-btn,.chip,.cat-chip,.remember label{cursor:pointer}
+button:disabled,.nav-item.soon{cursor:not-allowed}
+
+/* ---------- Grid de datos + paginador (por defecto 5 filas) ---------- */
+.dgrid{width:100%;border-collapse:collapse}
+.dgrid th{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:#64748b;text-align:left;padding:11px 14px;background:#F8FAFC;border-bottom:1px solid var(--border);white-space:nowrap}
+.dgrid td{padding:12px 14px;border-bottom:1px solid #EEF1F6;font-size:13.5px;vertical-align:middle}
+.dgrid tbody tr:hover td{background:#FFF8F2}
+.dgrid .r{text-align:right}.dgrid .nw{white-space:nowrap}
+.dgrid tr.inactive td{opacity:.62}
+.pager{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:12px 14px;border-top:1px solid var(--border);font-size:13px;color:#64748b}
+.pager .sz{display:flex;align-items:center;gap:8px}
+.pager .sz select{width:auto;padding:5px 26px 5px 10px;height:32px}
+.pager .info{margin-left:auto}
+.pager .pg{display:flex;gap:4px}
+.pager .pg button{min-width:32px;height:32px;padding:0 8px;border-radius:8px;border:1px solid var(--border);background:#fff;font-weight:700;color:#3A4257;cursor:pointer}
+.pager .pg button:hover:not(:disabled){border-color:var(--orange);color:var(--orange)}
+.pager .pg button.on{background:var(--orange);border-color:var(--orange);color:#fff}
+.pager .pg button:disabled{opacity:.4;cursor:not-allowed}
+.link,a.link,.acts a{cursor:pointer}
+/* Pantalla Clientes: sin doble scroll (la página no se mueve, solo cada panel) */
+body[data-module=clientes] .content{display:flex;flex-direction:column}
+body[data-module=clientes] .content:has(#viewList:not([hidden])){overflow:hidden}
+#viewList{flex:1;min-height:0;display:flex;flex-direction:column}
+#viewList .split{flex:1;min-height:0;height:auto}
+.cl-detail{display:flex;flex-direction:column;overflow:hidden;padding:20px 24px 0}
+.cl-detail .d-head{flex:none}
+.cl-detail .d-body{flex:1;min-height:0;overflow:auto;padding:0 4px 22px 0}
+
+/* ---------- 12. Iconos y marca = SigOne Legal (PrimeIcons) ---------- */
+i.ic,.pi{flex:none;line-height:1}
+svg.ic{display:none}
+/* Marca (apps-layout.scss): tile 42px radio 12, borde naranja .45, fondo .10, icono 18px; código 18px */
+.sidebar .side-head{height:86px;min-height:86px;padding:20px 16px;border-bottom:1px solid #282d3a}
+.brand{gap:12px}
+.brand-mark,.sidebar .brand-mark,.sidebar .side-head .brand-mark{display:inline-flex;align-items:center;justify-content:center;flex:0 0 42px;width:42px;height:42px;border-radius:12px;border:1px solid rgba(244,119,33,.45);background:rgba(244,119,33,.1);color:#f47721;font-size:18px;filter:none}
+.brand-text{font-size:18px;line-height:1.1;font-weight:700;color:#f47721;font-family:var(--font-display)}
+body.side-collapsed .sidebar .side-head{padding:20px 16px}
+/* Sidebar: icono 15px en caja de 16px, hereda color del enlace */
+.nav-item{gap:10px}
+.nav-item .ic{flex:0 0 16px;font-size:15px;width:16px;text-align:center}
+.nav-item:hover{color:#f47721;background:rgba(244,119,33,.08)}
+/* Header: toggle 34px/18px, campana 34px/18px con badge rojo, logout */
+.icon-btn{width:34px;height:34px;font-size:18px;color:#667085}
+.icon-btn:hover{background:#f1f3f7;color:#202533}
+.bell{border-radius:999px;color:#4c5565}
+.bell .cnt{position:absolute;top:2px;right:2px;display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border:2px solid #fff;border-radius:999px;background:#d63d43;color:#fff;font-size:10px;font-weight:800;line-height:1}
+.btn-logout{gap:8px;color:#566071}
+.btn-logout .ic{font-size:14px}
+.top-right{gap:16px}
+.btn .ic{font-size:14px}
+.field .ic,.kv .ic{font-size:15px}
+.link .ic,.acts .ic{font-size:13px}
+.act{width:32px;height:32px;font-size:15px}
+.icon-btn.act .ic{font-size:15px}
+.ic-chip{font-size:18px}
+.eye-btn{font-size:14px}
+.crumb .ic{font-size:10px;transform:rotate(-90deg)}
+
+/* ---------- 13. Diseño sobrio (menos "look IA"): plano, sin brillos ni degradados decorativos ----------
+   Criterios (ui-ux-pro-max / frontend-design): un solo acento (naranja), color solo con significado
+   (calificación del cliente), elevación mínima y consistente, sin blur decorativo, movimiento breve. */
+body{background:var(--bg)}
+.topbar{backdrop-filter:none}
+.sidebar{background:#171b27}
+.nav-item.active{background:rgba(244,119,33,.18)}
+/* Botones: color sólido, sin degradado ni resplandor */
+.btn{border-radius:9px}
+.btn-primary,.btn-primary:hover{background:var(--orange);box-shadow:none;transform:none}
+.btn-primary:hover{background:var(--orange-600)}
+.btn-login{box-shadow:none}
+/* Tarjetas: borde fino + sombra mínima de SPL, sin elevación al pasar el mouse */
+.card{box-shadow:0 1px 2px rgba(16,24,40,.04)}
+.kp:hover,.ucard:hover{transform:none;box-shadow:0 1px 2px rgba(16,24,40,.04)}
+/* Avatares: color sólido */
+.avatar{background:#f47721}
+.avatar.alt1{background:#3B6FE0}.avatar.alt2{background:#16A34A}.avatar.alt3{background:#64748b}.avatar.alt4{background:#7C4DD6}
+/* Modales y paneles: sin desenfoque */
+.modal-bg,.drawer-bg{backdrop-filter:none;background:rgba(23,27,39,.5)}
+.modal{box-shadow:0 12px 32px rgba(16,24,40,.18)}
+/* Sin animaciones de entrada en cascada */
+.rise{animation:none!important}
+/* Foco visible para teclado */
+:focus-visible{outline:2px solid #f47721;outline-offset:2px;border-radius:6px}
+.input:focus-visible,.select:focus-visible,.textarea:focus-visible{outline:none}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}

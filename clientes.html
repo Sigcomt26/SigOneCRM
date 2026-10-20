@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SigOne CRM · Gestión de Clientes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Sora:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/primeicons/primeicons.css">
+<link rel="stylesheet" href="assets/styles.css?v=20261019c">
+<style>
+/* ===== Gestión de clientes (Balsamiq: lista | detalle | preferencias) ===== */
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{padding:7px 14px;border-radius:99px;border:1px solid var(--border);background:#fff;font-weight:700;font-size:13px;color:#4B5368}
+.chip:hover{border-color:var(--orange);color:var(--orange)}
+.chip small{opacity:.6;margin-left:4px;font-weight:700}.chip.on small{opacity:.85}
+.chip.on{background:var(--orange);border-color:var(--orange);color:#fff}
+.split{display:grid;grid-template-columns:330px 1fr;height:calc(100vh - 76px - 170px);min-height:560px;overflow:hidden}
+.cl-side{border-right:1px solid var(--border);display:flex;flex-direction:column;min-height:0}
+.cl-side .search{padding:16px}
+.cl-list{overflow:auto;flex:1;padding:0 10px 12px}
+.cl-item{display:flex;gap:12px;align-items:center;padding:12px 10px 12px 14px;border-radius:12px;cursor:pointer;position:relative;margin-bottom:4px;border:1px solid transparent;width:100%;text-align:left}
+.cl-item::before{content:"";position:absolute;left:0;top:14px;bottom:14px;width:4px;border-radius:4px;background:var(--stage,#C4C9D6)}
+.cl-item:hover{background:#F8F9FC}
+.cl-item.active{background:var(--orange-50);border-color:#F9D2B0}
+.cl-item .info{min-width:0;flex:1}
+.cl-item .row1{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.cl-item b{font-size:14px}
+.cl-item time{font-size:11.5px;color:var(--muted);white-space:nowrap}
+.cl-item p{color:var(--muted);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cl-detail{overflow:auto;padding:22px 24px}
+.d-head{display:flex;align-items:center;gap:14px;margin-bottom:20px;flex-wrap:wrap}
+.d-head .avatar{width:56px;height:56px;font-size:20px}
+.d-head h2{font-size:22px;font-weight:800;letter-spacing:-.4px}
+.d-head .sp{margin-left:auto}
+.d-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.d-col{display:grid;gap:18px;align-content:start}
+.box{border:1px solid var(--border);border-radius:var(--radius);background:#fff}
+.box-h{display:flex;align-items:center;justify-content:space-between;padding:14px 18px 6px}
+.box-h h3{font-size:15px;font-weight:800}
+.box-h .acts{display:flex;gap:14px}
+.box-b{padding:6px 18px 14px}
+.kv{display:flex;justify-content:space-between;gap:16px;padding:9px 0;border-bottom:1px dashed var(--border);align-items:flex-start}
+.kv:last-child{border-bottom:0}
+.kv span{color:var(--muted);display:flex;gap:8px;align-items:center;white-space:nowrap}
+.kv span .ic{font-size:15px;color:#9AA1B4}
+.kv b{font-weight:700;text-align:right}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.stat{display:flex;align-items:center;gap:12px;padding:14px 16px;border:1px solid var(--border);border-radius:var(--radius);background:#fff}
+.stat .n{font-size:28px;font-weight:800;color:var(--orange);letter-spacing:-1px;line-height:1}
+.stat small{color:var(--muted);font-weight:600;line-height:1.25;display:block}
+
+/* ===== Conversación + Crear pedido (Balsamiq: "Gestión de clientes copy") ===== */
+.chat-top{display:flex;align-items:center;gap:14px;margin-bottom:14px;flex-wrap:wrap}
+.chat-top h2{font-size:22px;font-weight:800}
+.chat-top .sp{margin-left:auto;display:flex;gap:10px}
+.tabs{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.tab{padding:9px 16px;border-radius:10px;border:1px solid var(--border);background:#fff;font-weight:700;font-size:13.5px;color:#4B5368}
+.tab:hover{border-color:var(--orange);color:var(--orange)}
+.tab.on{background:var(--orange-50);border-color:var(--orange);color:var(--orange-600)}
+.tab.right{margin-left:auto}
+.chat-grid{display:grid;grid-template-columns:1fr 380px;gap:18px;height:calc(100vh - 76px - 210px);min-height:520px}
+.chat{display:flex;flex-direction:column;min-height:0;overflow:hidden}
+.msgs{flex:1;overflow:auto;padding:20px;display:flex;flex-direction:column;gap:12px;background:#FAFBFD}
+.msg{max-width:78%;padding:11px 14px;border-radius:14px;box-shadow:0 1px 2px rgba(19,26,42,.05)}
+.msg .who{display:flex;justify-content:space-between;gap:20px;font-size:11.5px;color:var(--muted);font-weight:700;margin-bottom:3px}
+.msg.c{background:#fff;border:1px solid var(--border);border-top-left-radius:4px;align-self:flex-start}
+.msg.v{background:var(--orange-50);border:1px solid #F9D2B0;border-top-right-radius:4px;align-self:flex-end}
+.sys{align-self:stretch;display:flex;align-items:center;gap:12px;color:var(--muted);font-size:13px;font-weight:700}
+.sys::before,.sys::after{content:"";flex:1;height:1px;background:var(--border)}
+.sys .ok{color:var(--green);display:inline-flex;gap:6px;align-items:center}
+.composer{display:flex;gap:10px;padding:14px;border-top:1px solid var(--border);background:#fff}
+.composer textarea{flex:1;resize:none;height:56px}
+.composer .btn{height:56px;padding:0 22px}
+.panel{overflow:auto;display:flex;flex-direction:column}
+.panel .box-b{padding:14px 20px}
+.total-row{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid var(--border);font-weight:800}
+.total-row b{font-size:20px;color:var(--orange-600)}
+details.sec{border-bottom:1px solid var(--border)}
+details.sec summary{list-style:none;display:flex;justify-content:space-between;align-items:center;padding:14px 20px;font-weight:800;cursor:pointer}
+details.sec summary::-webkit-details-marker{display:none}
+details.sec[open] summary .ic{transform:rotate(180deg)}
+details.sec summary .ic{transition:.2s;color:#8A92A6}
+.sec-b{padding:0 20px 16px;display:grid;gap:12px}
+.prod{display:flex;gap:12px;align-items:center;border:1px solid var(--border);border-radius:12px;padding:10px 12px}
+.prod .pi{flex:1;min-width:0}.prod .pi b{display:block}.prod .pi small{color:var(--muted)}
+.prod input{width:62px;text-align:center;padding:6px}
+.prod .tr{color:#9AA1B4;padding:6px;border-radius:8px}.prod .tr:hover{color:var(--red);background:var(--red-50)}
+.addrow{display:grid;grid-template-columns:1fr 64px auto;gap:8px;padding:10px;background:#FAFBFD;border:1px dashed #F4B57E;border-radius:12px}
+.panel-f{padding:16px 20px;margin-top:auto;border-top:1px solid var(--border);display:grid;gap:10px}
+.sum{display:flex;justify-content:space-between;font-weight:800}
+table.t{width:100%;border-collapse:collapse}
+table.t th{font-size:11px;letter-spacing:.7px;text-transform:uppercase;color:var(--muted);text-align:left;padding:8px 6px}
+table.t td{padding:11px 6px;border-top:1px solid var(--border);font-size:13.5px}
+@media(max-width:1100px){.split,.chat-grid{grid-template-columns:1fr;height:auto}.cl-side{max-height:340px;border-right:0;border-bottom:1px solid var(--border)}.d-grid{grid-template-columns:1fr}.chat{height:520px}}
+/* Cabeceras de panel + expandir */
+.pane-h{display:flex;justify-content:space-between;align-items:center;padding:8px 8px 8px 20px;border-bottom:1px solid var(--border);background:#fff}
+.pane-h b{font-size:15px;font-weight:800}
+.pane-h .icon-btn{width:34px;height:34px;font-size:18px}
+.chat-grid{transition:grid-template-columns .25s}
+.chat-grid.exp-chat{grid-template-columns:1fr}.chat-grid.exp-chat #panel{display:none}
+.chat-grid.exp-panel{grid-template-columns:1fr}.chat-grid.exp-panel .chat{display:none}
+.chat-grid.exp-chat .msg{max-width:60%}
+/* Historial de pedidos */
+.h-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:16px 20px 4px}
+.h-kpi{background:var(--orange-50);border-radius:12px;padding:10px 12px}
+.h-kpi small{display:block;font-size:11px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:var(--muted)}
+.h-kpi b{font-size:18px;letter-spacing:-.4px}
+.h-tools{display:grid;gap:10px;padding:12px 20px}
+.h-chips{display:flex;gap:6px;flex-wrap:wrap}
+.h-chips .chip{padding:5px 12px;font-size:12px}
+.ord-list{display:grid;gap:10px;padding:0 20px 20px;align-content:start;align-items:start}
+.chat-grid.exp-panel .ord-list{grid-template-columns:1fr 1fr}
+.chat-grid.exp-panel .h-kpis{max-width:760px}
+.ord{border:1px solid var(--border);border-radius:14px;background:#fff;overflow:hidden}
+.ord.open{border-color:#F9D2B0;box-shadow:var(--shadow)}
+.ord-h{display:flex;align-items:center;gap:12px;width:100%;padding:12px 14px;text-align:left}
+.ord-h .id{font-weight:800}.ord-h small{display:block;color:var(--muted)}
+.ord-h .tot{margin-left:auto;text-align:right;font-weight:800}
+.ord-h .ic.chev{color:#8A92A6;transition:.2s}.ord.open .chev{transform:rotate(180deg)}
+.ord-b{padding:4px 14px 14px;border-top:1px dashed var(--border);display:grid;gap:12px}
+.steps{display:flex;align-items:center;margin-top:10px}
+.step{flex:1;text-align:center;font-size:11px;font-weight:700;color:#9AA1B4;position:relative}
+.step::before{content:"";display:block;width:12px;height:12px;border-radius:50%;background:#D5D9E4;margin:0 auto 4px;position:relative;z-index:1}
+.step::after{content:"";position:absolute;top:5px;left:-50%;width:100%;height:2px;background:#D5D9E4}
+.step:first-child::after{display:none}
+.step.done{color:var(--green)}.step.done::before,.step.done::after{background:var(--green)}
+.step.cur{color:var(--orange-600)}.step.cur::before{background:var(--orange);box-shadow:0 0 0 4px var(--orange-100)}.step.cur::after{background:var(--green)}
+.ord-b table{width:100%;border-collapse:collapse;font-size:13px}
+.ord-b td,.ord-b th{padding:6px 0;text-align:left}.ord-b td:last-child,.ord-b th:last-child{text-align:right}
+.ord-b th{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px}
+.ord-meta{display:flex;gap:14px;flex-wrap:wrap;color:var(--muted);font-size:12.5px}
+.ord-act{display:flex;gap:8px;flex-wrap:wrap}
+/* Calificación del cliente: colores protagonistas */
+.chip.cat{background:var(--t);border-color:transparent;color:var(--d);display:inline-flex;align-items:center;gap:7px}
+.chip.cat::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--c)}
+.chip.cat:hover{border-color:var(--c);color:var(--d)}
+.chip.cat.on{background:var(--c);color:#fff;box-shadow:0 6px 14px color-mix(in srgb,var(--c) 40%,transparent)}
+.chip.cat.on::before{background:#fff}
+.chip.all.on{background:var(--navy);border-color:var(--navy)}
+.cat-pill{display:inline-flex;align-items:center;gap:7px;background:var(--t);color:var(--d);font-weight:800;font-size:13px;padding:5px 13px;border-radius:99px}
+.cat-pill::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--c)}
+.cat-pill.sm{font-size:11px;padding:2px 9px;margin-top:3px}
+.d-head{padding:14px 16px;border-radius:14px;background:none;border:0;border-bottom:1px solid var(--border);border-radius:0;padding:4px 0 16px}
+.d-head h2{margin-bottom:4px}
+.cl-item::before{width:5px}
+/* Línea de tiempo del historial */
+.h-sub{color:var(--muted);font-weight:600;margin:0 0 6px}
+.tl{display:grid;gap:0;max-height:52vh;overflow:auto;margin-top:4px}
+.tl-i{display:flex;gap:14px;padding:12px 0;border-bottom:1px dashed var(--border);position:relative}
+.tl-d{width:11px;height:11px;border-radius:50%;background:var(--orange);margin-top:5px;flex:none;box-shadow:0 0 0 4px var(--orange-50)}
+.tl-v{margin:4px 0;display:flex;align-items:center;gap:8px;flex-wrap:wrap}.tl-v s{color:var(--muted)}.tl-v .arrow{transform:rotate(-90deg);color:#9AA1B4}
+.tl small{color:var(--muted)}
+.modal-b .h-chips{margin-bottom:4px}
+</style>
+</head>
+<body data-module="clientes" data-side="gestion">
+<div class="app">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main">
+    <header class="topbar" id="topbar"></header>
+    <main class="content">
+
+      <!-- ===== VISTA 1 · LISTA + DETALLE ===== -->
+      <section id="viewList">
+        <div class="page-head">
+          <div>
+            <div class="crumb">Clientes <i data-icon="chevron" style="transform:rotate(-90deg)"></i> <b>Gestión con clientes</b></div>
+            <h1>Gestión con clientes</h1>
+          </div>
+          <div class="chips" id="chips"></div>
+        </div>
+        <div class="card split">
+          <aside class="cl-side">
+            <div class="search"><i data-icon="search"></i><input class="input" id="q" placeholder="Buscar"></div>
+            <div class="cl-list" id="clList"></div>
+          </aside>
+          <div class="cl-detail" id="clDetail"></div>
+        </div>
+      </section>
+
+      <!-- ===== VISTA 2 · CONVERSACIÓN + CREAR PEDIDO ===== -->
+      <section id="viewChat" hidden>
+        <div class="chat-top" id="chatTop"></div>
+        <div class="tabs" id="tabs"></div>
+        <div class="chat-grid" id="chatGrid">
+          <div class="card chat">
+            <div class="pane-h"><b>Conversación</b><button class="icon-btn" id="btnExpChat" title="Expandir conversación"></button></div>
+            <div class="msgs" id="msgs"></div>
+            <div class="composer">
+              <textarea class="textarea" id="msgIn" placeholder="Escribe un mensaje…"></textarea>
+              <button class="btn btn-primary" id="btnSend"><i data-icon="send"></i>Enviar</button>
+            </div>
+          </div>
+          <aside class="card panel" id="panel"></aside>
+        </div>
+      </section>
+
+    </main>
+  </div>
+</div>
+<div class="modal-bg" id="cmodal"><div class="modal" id="cmBox"></div></div>
+<script src="assets/app.js?v=20261019c"></script>
+<script src="assets/clientes.js?v=20261019c"></script>
+</body>
+</html>

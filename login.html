@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SigOne CRM · Ingresar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- Mismas fuentes que el login de SigOne Legal -->
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/primeicons/primeicons.css">
+<link rel="stylesheet" href="assets/styles.css?v=20261019c">
+<link rel="stylesheet" href="assets/login.css?v=20261019c">
+</head>
+<body class="sigone-auth-page">
+
+  <!-- Panel izquierdo (60 %): video + overlay + logo oficial -->
+  <section class="left-panel">
+    <video class="left-video" poster="assets/login-poster.jpg" autoplay muted loop playsinline preload="auto" aria-hidden="true"><source src="assets/video_trabajando.mp4" type="video/mp4"></video>
+    <div class="left-overlay"></div>
+    <div class="left-content">
+      <div class="sigone-hero">
+        <div class="sigone-brandline"><img class="sigone-brand-logo" src="assets/logo/Recurso 11.png" alt="SigOne Comercial by Sigcomt"></div>
+        <h1 class="left-title">Suite de Gestión Comercial</h1>
+        <p class="left-sub">Plataforma integral para la gestión de clientes y ventas</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Panel derecho (40 %): formulario -->
+  <section class="right-panel">
+    <form class="login-box" id="loginForm" novalidate>
+      <div class="mob-brand" id="mobBrand"></div>
+      <div class="login-header">
+        <h2 class="login-title">Bienvenido</h2>
+        <span class="login-title-line"></span>
+        <p class="login-sub">Ingresa tus credenciales para continuar</p>
+      </div>
+
+      <div class="form-group">
+        <label class="f-label" for="email">Correo electrónico</label>
+        <div class="f-wrap"><input class="f-input" id="email" type="email" placeholder="usuario@sigcomt.com" autocomplete="username"></div>
+      </div>
+      <div class="form-group">
+        <label class="f-label" for="pass">Contraseña</label>
+        <div class="f-wrap">
+          <input class="f-input f-input--password" id="pass" type="password" placeholder="••••••••" autocomplete="current-password">
+          <button type="button" class="eye-btn" id="togglePass" aria-label="Mostrar contraseña"><i data-icon="eye"></i></button>
+        </div>
+      </div>
+      <div class="login-options"><div class="remember"><input type="checkbox" id="remember"><label for="remember">Recordar mi correo</label></div></div>
+      <div class="login-err" id="err" hidden>Ingresa tu correo y contraseña.</div>
+      <button class="btn-login" type="submit">Ingresar al Sistema</button>
+      <p class="login-footer">¿Problemas para acceder? <a href="#" id="support">Contacta soporte</a></p>
+    </form>
+  </section>
+
+<script src="assets/app.js?v=20261019c"></script>
+<script>
+  document.getElementById('mobBrand').innerHTML = logoFull('m');
+
+  // Mostrar/ocultar contraseña
+  const pass = document.getElementById('pass'), tg = document.getElementById('togglePass');
+  tg.onclick = () => { const show = pass.type === 'password'; pass.type = show ? 'text' : 'password'; tg.innerHTML = icon(show ? 'eyeoff' : 'eye'); };
+
+  // Recordar correo (try/catch por si el almacenamiento está bloqueado)
+  try { const r = localStorage.getItem('sigone_crm_email'); if (r) { email.value = r; remember.checked = true; } } catch(e){}
+
+  // Envío demo: cualquier correo + contraseña → Inicio
+  document.getElementById('loginForm').addEventListener('submit', e => {
+    e.preventDefault();
+    if (!email.value.trim() || !pass.value) { err.hidden = false; return; }
+    err.hidden = true;
+    try { remember.checked ? localStorage.setItem('sigone_crm_email', email.value) : localStorage.removeItem('sigone_crm_email'); } catch(e){}
+    const isAdmin = email.value.toLowerCase().startsWith('admin');
+    const local = email.value.split('@')[0];
+    const user = isAdmin ? DEFAULT_USER : { name: local.charAt(0).toUpperCase() + local.slice(1), role: 'Vendedor' };
+    try { sessionStorage.setItem(SESSION_KEY, JSON.stringify(user)); } catch(e){}
+    location.href = 'inicio.html';
+  });
+  document.getElementById('support').onclick = e => { e.preventDefault(); toast('Soporte: soporte@sigcomt.com'); };
+</script>
+</body>
+</html>

@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SigOne CRM · Dashboard de clientes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Sora:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/primeicons/primeicons.css">
+<link rel="stylesheet" href="assets/styles.css?v=20261019c">
+<link rel="stylesheet" href="assets/dashboard.css?v=20261019c">
+</head>
+<body data-module="inicio" data-side="dashboard">
+<div class="app">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main">
+    <header class="topbar" id="topbar"></header>
+    <main class="content dash">
+
+      <div class="crumb" style="margin-bottom:10px">Dashboard <i data-icon="chevron" style="transform:rotate(-90deg)"></i> <b>Dashboard de clientes</b></div>
+
+      <div class="page-head">
+        <div><h1>Dashboard de clientes</h1><p>Resumen de la cartera: calificación, atención y pedidos</p></div>
+      </div>
+
+      <!-- FILTROS (Balsamiq: Rango, Cliente, Estado, Limpiar filtros, Filtros avanzados) -->
+      <section class="card fbar">
+        <div class="f"><label>Rango</label><div class="rng"><input class="input" type="date" id="fDesde"><span>–</span><input class="input" type="date" id="fHasta"></div></div>
+        <div class="f grow"><label>Cliente</label><select class="select" id="fCli"></select></div>
+        <div class="f"><label>Estado</label><select class="select" id="fEst"></select></div>
+        <div class="f"><label>Vendedor</label><select class="select" id="fVen"></select></div>
+        <div class="sp">
+          <button class="btn btn-ghost" id="bClear"><i data-icon="repeat"></i>Limpiar filtros</button>
+          <button class="btn btn-primary" id="bAdv"><i data-icon="sliders"></i>Filtros avanzados<span class="chip-count" id="advN" hidden>0</span></button>
+        </div>
+      </section>
+
+      <!-- KPIs -->
+      <section class="kp-grid" id="kpis"></section>
+
+      <!-- Clientes por vendedor + Tipo de clientes -->
+      <section class="g2">
+        <div class="card panel">
+          <div class="ph"><h3>Clientes por vendedor</h3><span class="pill-o" id="vTot"></span></div>
+          <table class="vt"><tbody id="vBody"></tbody><tfoot id="vFoot"></tfoot></table>
+        </div>
+        <div class="card panel">
+          <div class="ph"><h3>Tipo de clientes</h3><small>Cartera por calificación</small></div>
+          <div class="cols" id="cols"></div><div class="xl" id="xl"></div>
+        </div>
+      </section>
+
+      <!-- Pedidos por vendedor (compara al equipo; resalta al vendedor filtrado) -->
+      <section class="card panel" style="margin-bottom:14px">
+        <div class="ph"><div><h3>Pedidos por vendedor</h3><small>Por forma de pago · compara al equipo</small></div>
+          <div class="seg-s" id="pvMode"><button class="on" data-m="orders">N° de pedidos</button><button data-m="amount">Monto</button></div></div>
+        <div class="pv-leg" id="pvLeg"></div>
+        <div id="pvBars"></div>
+      </section>
+
+      <!-- Atendidos vs no atendidos + Distribución + Oportunidades -->
+      <section class="g3">
+        <div class="card panel">
+          <div class="ph"><h3>Clientes atendidos vs no atendidos</h3></div>
+          <div class="donut-wrap"><div class="donut" id="donut"></div><div class="dl" id="dLeg"></div></div>
+        </div>
+        <div class="card panel">
+          <div class="ph"><h3>Distribución por tipo</h3></div>
+          <table class="tt"><thead><tr><th>Tipo</th><th>Total</th><th>%</th></tr></thead><tbody id="tBody"></tbody><tfoot id="tFoot"></tfoot></table>
+        </div>
+        <div class="card panel">
+          <div class="ph"><h3>Para atender hoy</h3></div>
+          <div class="ins" id="ins"></div>
+        </div>
+      </section>
+
+      <!-- Ranking -->
+      <section class="card panel">
+        <div class="ph"><h3>Ranking de clientes</h3><small id="rkSub"></small></div>
+        <div class="rk-tools">
+          <div class="f"><label>Ordenar por</label><select class="select" id="rkOrd"><option value="orders">Por número de pedidos</option><option value="amount">Por monto total del pedido</option></select></div>
+          <div class="f"><label>Mostrar</label><select class="select" id="rkTop"><option value="5">Top 5</option><option value="10" selected>Top 10</option><option value="30">Todos</option></select></div>
+          <div class="f"><label>Forma de pago</label><select class="select" id="rkPay"><option>Todos</option><option>Contado</option><option>Crédito</option><option>Letras</option></select></div>
+          <button class="btn btn-ghost" id="bCsv" style="margin-left:auto"><i data-icon="download"></i>Exportar CSV</button>
+        </div>
+        <div style="overflow:auto"><table class="rk"><thead><tr><th>#</th><th>Cliente</th><th>Vendedor</th><th>Dirección</th><th>Forma de pago</th><th class="r">N° de pedidos</th><th class="r">Monto total de pedido</th><th class="r">Acciones</th></tr></thead><tbody id="rkBody"></tbody></table></div>
+        <div class="pager" id="rkPager"></div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<!-- Drawer Filtros avanzados (Balsamiq) -->
+<div class="drawer-bg" id="dBg"></div>
+<aside class="drawer" id="drawer" aria-label="Filtros avanzados">
+  <div class="dh"><h3>Filtros avanzados</h3><button class="icon-btn" id="dClose" aria-label="Cerrar"><i data-icon="x"></i></button></div>
+  <div class="db">
+    <div class="grid-2"><div class="field"><label>Fecha inicio</label><input class="input" type="date" id="aDesde"></div><div class="field"><label>Fecha fin</label><input class="input" type="date" id="aHasta"></div></div>
+    <div class="field"><label>Cliente</label><select class="select" id="aCli"></select></div>
+    <div class="field"><label>Estado</label><select class="select" id="aEst"></select></div>
+    <div class="field"><label>Vendedor</label><select class="select" id="aVen"></select></div>
+    <div class="field"><label>Canal de atención</label><select class="select" id="aCan"><option value="">Todos los canales</option><option>WhatsApp</option><option>Correo</option><option>Teléfono</option></select></div>
+    <div class="field"><label>Línea de preferencia</label><select class="select" id="aLin"><option value="">Todas las líneas</option><option>Navideños</option><option>Hogar</option><option>Iluminación</option><option>Decoración</option></select></div>
+    <div class="chk-row"><label><input type="checkbox" id="aWa"> Tiene WhatsApp</label><label><input type="checkbox" id="aMail"> Tiene correo</label></div>
+  </div>
+  <div class="df"><button class="btn btn-ghost" id="aClear">Limpiar</button><button class="btn btn-primary" id="aApply">Filtrar</button></div>
+</aside>
+
+<!-- Modal Historial / Editar de cliente -->
+<div class="modal-bg" id="cm"><div class="modal" id="cmBox"></div></div>
+<script src="assets/app.js?v=20261019c"></script>
+<script>
+/* =====================================================================
+   Dashboard de clientes — datos de ejemplo + filtros reales (sin backend)
+   ===================================================================== */
+const CATS = {
+  'Alto valor':   {c:'#16A34A', t:'#E8F8EE'},
+  'Regular':      {c:'#3B6FE0', t:'#EAF0FD'},
+  'En seguimiento':{c:'#E39B0B', t:'#FDF3DC'},
+  'Sin calificar':{c:'#8A92A6', t:'#EEF0F5'}
+};
+const VEND = ['Juan Perez','Jhon Perez','María Torres'];
+const VCOL = ['#F47721','#3B6FE0','#16A34A'];
+const NAMES = ['Distribuidora Andina','Comercial Lima Norte','Importaciones Pacífico','Grupo Inca Retail','Ferretería El Sol','Ilumina Perú SAC','Decoraciones Rímac','Navidad Express','Casa Hogar Surco','Mercado Mayorista Sur','Tiendas Miraflores','Corporación Quispe','Boutique Navideña','Ventas del Centro','Hogar & Estilo','Luces del Norte','Almacenes Callao','Proveedora Chorrillos','Mega Fiestas SAC','Regalos Premium','Bazar San Isidro','Comercial Barranco','Detalles Lince','Importadora Oriente','Tiendas La Molina','Distribuciones Ate','Inversiones Pueblo Libre','Artículos Magdalena','Decor Jesús María','Casa Navidad Perú'];
+const CATSEQ = ['Alto valor','Regular','En seguimiento','Sin calificar','Alto valor','Regular','En seguimiento','Regular','Sin calificar','Alto valor'];
+const CAN = ['WhatsApp','Correo','Teléfono'], LIN = ['Navideños','Hogar','Iluminación','Decoración'], PAY = ['Contado','Contado','Crédito','Letras','Contado'];
+const CITY = ['Lima','Lima','Callao','Arequipa','Lima','Trujillo'];
+// Generador determinista (sin Math.random: los números no cambian al recargar)
+let seed = 7; const rnd = () => (seed = (seed*9301+49297) % 233280) / 233280;
+const today = new Date(); today.setHours(0,0,0,0);
+const iso = d => d.toISOString().slice(0,10);
+const CL = NAMES.map((n,i)=>{
+  const cat = CATSEQ[i%CATSEQ.length];
+  const base = {'Alto valor':[70,100],'Regular':[30,70],'En seguimiento':[10,40],'Sin calificar':[2,12]}[cat];
+  const orders = Math.round(base[0]+rnd()*(base[1]-base[0]));
+  const d = new Date(today); d.setDate(d.getDate()-Math.floor(rnd()*88));
+  return { id:i+1, name:n, vendor:VEND[i%3], city:CITY[i%CITY.length], pay:PAY[i%PAY.length], orders,
+    amount:Math.round(orders*(120+rnd()*520)/10)*10, cat, att:((i*3)%7)<4, canal:CAN[i%3], linea:LIN[i%4], wa:i%4!==3, mail:i%3!==2, date:iso(d) };
+});
+const GOAL = 640000; // meta mensual de ejemplo
+
+/* ---------- helpers ---------- */
+const $ = id => document.getElementById(id);
+const fmt = n => n.toLocaleString('es-PE');
+const money = n => 'S/ ' + fmt(n);
+const catPill = c => `<span class="cat-dot" style="--k:${CATS[c].c};--t:${CATS[c].t}">${c}</span>`;
+const F = {desde:'',hasta:'',cli:'',est:'',ven:'',canal:'',lin:'',wa:false,mail:false};
+
+/* ---------- filtros ---------- */
+function filtered(skipVen){
+  return CL.filter(c => (skipVen || !F.ven || c.vendor===F.ven) &&
+    (!F.desde || c.date>=F.desde) && (!F.hasta || c.date<=F.hasta) &&
+    (!F.cli || String(c.id)===F.cli) && (!F.est || c.cat===F.est) &&
+    (!F.canal || c.canal===F.canal) && (!F.lin || c.linea===F.lin) &&
+    (!F.wa || c.wa) && (!F.mail || c.mail));
+}
+function fillSelects(){
+  const cli = '<option value="">Todos los clientes</option>'+CL.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
+  const est = '<option value="">Todos los estados</option>'+Object.keys(CATS).map(k=>`<option>${k}</option>`).join('');
+  ['fCli','aCli'].forEach(i=>$(i).innerHTML=cli); ['fEst','aEst'].forEach(i=>$(i).innerHTML=est);
+  const ven='<option value="">Todos los vendedores</option>'+VEND.map(v=>`<option>${v}</option>`).join(''); ['fVen','aVen'].forEach(i=>$(i).innerHTML=ven);
+}
+function syncInputs(){
+  $('fDesde').value=$('aDesde').value=F.desde; $('fHasta').value=$('aHasta').value=F.hasta;
+  $('fCli').value=$('aCli').value=F.cli; $('fEst').value=$('aEst').value=F.est; $('fVen').value=$('aVen').value=F.ven;
+  $('aCan').value=F.canal; $('aLin').value=F.lin; $('aWa').checked=F.wa; $('aMail').checked=F.mail;
+  const n=(F.canal?1:0)+(F.lin?1:0)+(F.wa?1:0)+(F.mail?1:0); $('advN').hidden=!n; $('advN').textContent=n;
+}
+
+/* ---------- render ---------- */
+function kpis(L){
+  const tot=L.length, monto=L.reduce((s,c)=>s+c.amount,0), ped=L.reduce((s,c)=>s+c.orders,0);
+  const att=L.filter(c=>c.att).length, pct=tot?Math.round(att*100/tot):0, meta=Math.min(100,Math.round(monto*100/GOAL));
+  const K=[
+    {l:'Clientes en cartera',n:tot,s:`${L.filter(c=>c.cat==='Alto valor').length} de alto valor`},
+    {l:'Monto total de pedidos',n:money(monto),s:`${meta}% de la meta mensual (${money(GOAL)})`,m:meta},
+    {l:'Pedidos realizados',n:fmt(ped),s:'Ticket promedio '+money(ped?Math.round(monto/ped):0)},
+    {l:'Tasa de atención',n:pct+'%',s:`${att} atendidos · ${tot-att} pendientes`,m:pct}];
+  $('kpis').innerHTML=K.map(x=>`<div class="card kp"><div class="l">${x.l}</div><div class="n">${x.n}</div><div class="s">${x.s}</div>${x.m!=null?`<div class="meter"><i style="width:${x.m}%"></i></div>`:''}</div>`).join('');
+}
+function vendors(L){
+  const max=Math.max(1,...VEND.map(v=>L.filter(c=>c.vendor===v).length));
+  $('vBody').innerHTML=VEND.map((v,i)=>{const n=L.filter(c=>c.vendor===v).length;
+    return `<tr data-tip="${tipV(v,L)}" tabindex="0"><td style="width:46%"><span class="av" style="background:${VCOL[i]}">${['JP','JH','MT'][i]}</span>${v}</td><td><div class="bar"><i style="width:0" data-w="${n*100/max}"></i></div></td><td class="num">${n}</td></tr>`}).join('');
+  $('vFoot').innerHTML=`<tr><td>Total</td><td></td><td class="num">${L.length}</td></tr>`; $('vTot').textContent=L.length+' clientes';
+  requestAnimationFrame(()=>document.querySelectorAll('#vBody .bar i').forEach(e=>e.style.width=e.dataset.w+'%'));
+}
+function cols(L){
+  const ks=Object.keys(CATS), cnt=ks.map(k=>L.filter(c=>c.cat===k).length), top=Math.max(10,Math.ceil(Math.max(...cnt)/5)*5);
+  $('cols').innerHTML=`<div class="grid">${[top,top*.75,top*.5,top*.25,0].map(v=>`<i><b>${Math.round(v)}</b></i>`).join('')}</div>`+
+    ks.map((k,i)=>`<div class="col" style="--c:${CATS[k].c}" data-tip="${tipC(k,L)}" tabindex="0"><div class="b" data-h="${cnt[i]*100/top}"><span class="v">${cnt[i]}</span></div></div>`).join('');
+  $('xl').innerHTML=ks.map(k=>`<span>${k}</span>`).join('');
+  requestAnimationFrame(()=>document.querySelectorAll('#cols .b').forEach(e=>e.style.height=e.dataset.h+'%'));
+}
+function donut(L){
+  const a=L.filter(c=>c.att).length, n=L.length-a, t=L.length||1, R=70, C=2*Math.PI*R;
+  $('donut').innerHTML=`<svg width="170" height="170" viewBox="0 0 170 170"><circle cx="85" cy="85" r="${R}" fill="none" stroke="#EEF0F5" stroke-width="20"/>
+    <circle data-tip="Atendidos · ${a} clientes (${Math.round(a*100/t)}%)" cx="85" cy="85" r="${R}" fill="none" stroke="#16A34A" stroke-width="20" stroke-linecap="round" stroke-dasharray="${C*a/t-4} ${C}" style="transition:stroke-dasharray .9s"/>
+    <circle data-tip="No atendidos · ${n} clientes (${Math.round(n*100/t)}%)" cx="85" cy="85" r="${R}" fill="none" stroke="#F47721" stroke-width="20" stroke-linecap="round" stroke-dasharray="${C*n/t-4} ${C}" stroke-dashoffset="${-(C*a/t)}"/></svg>
+    <div class="ctr"><div><b>${Math.round(a*100/t)}%</b><br><small>atendidos</small></div></div>`;
+  $('dLeg').innerHTML=`<div class="r"><i style="background:#16A34A"></i>Atendidos<b>${a}</b><em>${Math.round(a*100/t)}%</em></div><div class="r"><i style="background:#F47721"></i>No atendidos<b>${n}</b><em>${Math.round(n*100/t)}%</em></div><div class="r" style="font-weight:800">Total<b>${L.length}</b><em>100%</em></div>`;
+}
+function dist(L){
+  const t=L.length||1;
+  $('tBody').innerHTML=Object.keys(CATS).map(k=>{const n=L.filter(c=>c.cat===k).length;return `<tr><td>${catPill(k)}</td><td><b>${n}</b></td><td>${Math.round(n*100/t)}%</td></tr>`}).join('');
+  $('tFoot').innerHTML=`<tr><td>Total</td><td>${L.length}</td><td>100%</td></tr>`;
+}
+function insights(L){
+  const seg=L.filter(c=>c.cat==='En seguimiento'&&!c.att).length, alto=L.filter(c=>c.cat==='Alto valor'&&!c.att).length, sin=L.filter(c=>c.cat==='Sin calificar').length;
+  const items=[
+    {i:'clock',f:'#E39B0B',bg:'#FDF3DC',bd:'#F6DFA6',t:`${seg} clientes en seguimiento sin atender`,s:'Contáctalos hoy para no perder la oportunidad.'},
+    {i:'trend',f:'#16A34A',bg:'#E8F8EE',bd:'#BFE8CE',t:`${alto} clientes de alto valor sin atención`,s:'Son los que más facturan: prioriza su atención.'},
+    {i:'users',f:'#64748b',bg:'#F1F3F8',bd:'#E1E5EE',t:`${sin} clientes sin calificar`,s:'Califícalos para ordenar tu cartera y metas.'}];
+  $('ins').innerHTML=items.map(x=>`<div class="it" style="--bgc:${x.bg};--bdc:${x.bd};--fc:${x.f}"><div class="ic-chip">${icon(x.i)}</div><div><b>${x.t}</b><small>${x.s}</small></div></div>`).join('');
+}
+let rkPage=1, rkSize=5;                           // paginador: 5 filas por defecto
+function ranking(L){
+  const pay=$('rkPay').value, ord=$('rkOrd').value, top=+$('rkTop').value;
+  const R=L.filter(c=>pay==='Todos'||c.pay===pay).sort((a,b)=>b[ord]-a[ord]).slice(0,top);
+  const pages=Math.max(1,Math.ceil(R.length/rkSize)); if(rkPage>pages) rkPage=pages;
+  const off=(rkPage-1)*rkSize, V=R.slice(off,off+rkSize);
+  $('rkSub').textContent=`Top ${R.length} · ordenado por ${ord==='orders'?'número de pedidos':'monto total'}`;
+  $('rkBody').innerHTML=V.length?V.map((c,i)=>{const n=off+i+1;return `<tr><td><span class="pos ${n<=3?'p'+n:''}">${n}</span></td><td><div class="nm">${c.name}</div><div style="margin-top:3px">${catPill(c.cat)}</div></td><td>${c.vendor}</td><td>${c.city}</td><td><span class="tag-pay ${c.pay}">${c.pay}</span></td><td class="r"><b>${c.orders}</b></td><td class="r mt">${money(c.amount)}</td><td class="r" style="white-space:nowrap"><button class="icon-btn act" data-h="${c.id}" title="Historial" style="display:inline-grid">${icon('history')}</button><button class="icon-btn act" data-e="${c.id}" title="Editar" style="display:inline-grid">${icon('pencil')}</button></td></tr>`}).join(''):'<tr><td colspan="8" class="empty">Sin resultados con estos filtros</td></tr>';
+  window._rk=R;
+  $('rkBody').querySelectorAll('[data-h]').forEach(b=>b.onclick=()=>openHist(+b.dataset.h));
+  $('rkBody').querySelectorAll('[data-e]').forEach(b=>b.onclick=()=>openEdit(+b.dataset.e));
+  const nums=Array.from({length:pages},(_,i)=>i+1).map(n=>`<button class="${n===rkPage?'on':''}" data-p="${n}">${n}</button>`).join('');
+  $('rkPager').innerHTML=`<div class="sz">Filas por página <select class="select" id="rkSz">${[5,10,20].map(n=>`<option ${n===rkSize?'selected':''}>${n}</option>`).join('')}</select></div>
+    <span class="info">${R.length?off+1:0}–${Math.min(off+rkSize,R.length)} de ${R.length}</span>
+    <div class="pg"><button data-p="${rkPage-1}" ${rkPage<=1?'disabled':''}>‹</button>${nums}<button data-p="${rkPage+1}" ${rkPage>=pages?'disabled':''}>›</button></div>`;
+  $('rkPager').querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{ rkPage=+b.dataset.p; ranking(filtered()); hydrateIcons(); });
+  $('rkSz').onchange=e=>{ rkSize=+e.target.value; rkPage=1; ranking(filtered()); hydrateIcons(); };
+}
+function goal(L){ return;
+  const m=L.reduce((s,c)=>s+c.amount,0), p=Math.min(100,Math.round(m*100/GOAL));
+  $('goalPct').textContent=p+'%'; $('goalTx').textContent=money(m)+' de '+money(GOAL);
+  $('goalRing').style.strokeDashoffset=163.4*(1-p/100);
+}
+function render(){ const L=filtered(); syncInputs(); goal(L); kpis(L); vendors(L); cols(L); donut(L); dist(L); insights(L); ranking(L); pedVend(); hydrateIcons(); window._k=1; }
+
+
+/* ---------- Tooltips de gráficos (un solo globo que sigue al mouse / foco) ---------- */
+const tip=document.createElement('div'); tip.className='ctip'; tip.setAttribute('role','tooltip'); document.body.appendChild(tip);
+const moveTip=(x,y)=>{ const w=tip.offsetWidth,hh=tip.offsetHeight; tip.style.left=Math.min(x+14,innerWidth-w-8)+'px'; tip.style.top=(y+16+hh>innerHeight?y-hh-12:y+16)+'px'; };
+document.addEventListener('mouseover',e=>{ const t=e.target.closest('[data-tip]'); if(t){ tip.innerHTML=t.dataset.tip; tip.classList.add('on'); moveTip(e.clientX,e.clientY);} });
+document.addEventListener('mousemove',e=>{ if(tip.classList.contains('on')) moveTip(e.clientX,e.clientY); });
+document.addEventListener('mouseout',e=>{ if(e.target.closest('[data-tip]')) tip.classList.remove('on'); });
+document.addEventListener('focusin',e=>{ const t=e.target.closest('[data-tip]'); if(t){ const r=t.getBoundingClientRect(); tip.innerHTML=t.dataset.tip; tip.classList.add('on'); moveTip(r.left+r.width/2,r.top); } });
+document.addEventListener('focusout',()=>tip.classList.remove('on'));
+const tt=(t,rows)=>`<b>${t}</b>`+rows.map(r=>`<span>${r[0]}<em>${r[1]}</em></span>`).join('');
+function tipV(v,L){ const x=L.filter(c=>c.vendor===v); const m=x.reduce((s,c)=>s+c.amount,0), p=x.reduce((s,c)=>s+c.orders,0);
+  return tt(v,[['Clientes',x.length],['Pedidos',fmt(p)],['Monto',money(m)],['Atendidos',x.filter(c=>c.att).length+' de '+x.length]]).replace(/"/g,'&quot;'); }
+function tipC(k,L){ const x=L.filter(c=>c.cat===k); const m=x.reduce((s,c)=>s+c.amount,0), p=x.reduce((s,c)=>s+c.orders,0);
+  return tt(k,[['Clientes',x.length+' ('+Math.round(x.length*100/(L.length||1))+'%)'],['Pedidos',fmt(p)],['Monto',money(m)]]).replace(/"/g,'&quot;'); }
+
+/* ---------- Pedidos por vendedor: barras apiladas por forma de pago ---------- */
+const PAYC={Contado:'#243049',Crédito:'#f47721',Letras:'#b8c0cf'}; let pvMode='orders';
+function pedVend(){
+  const L=filtered(true), key=pvMode, fm=key==='orders'?fmt:money;   // ignora el filtro Vendedor para poder comparar
+  const rows=VEND.map(v=>{ const x=L.filter(c=>c.vendor===v); const by=Object.keys(PAYC).map(p=>({p,val:x.filter(c=>c.pay===p).reduce((s,c)=>s+c[key],0)})); return {v,by,tot:by.reduce((s,b)=>s+b.val,0)}; });
+  const max=Math.max(1,...rows.map(r=>r.tot));
+  $('pvLeg').innerHTML=Object.keys(PAYC).map(p=>`<span><i style="background:${PAYC[p]}"></i>${p}</span>`).join('');
+  $('pvBars').innerHTML=rows.map(r=>`<div class="pv-row ${F.ven&&F.ven!==r.v?'dim':''}"><div class="pv-n">${r.v}</div>
+    <div class="pv-track"><div class="pv-bar" style="width:${r.tot*100/max}%">${r.by.map(b=>`<span style="flex:${b.val};background:${PAYC[b.p]}" data-tip="${tt(r.v+' · '+b.p,[[key==='orders'?'Pedidos':'Monto',fm(b.val)],['% del vendedor',(r.tot?Math.round(b.val*100/r.tot):0)+'%']]).replace(/"/g,'&quot;')}" tabindex="0"></span>`).join('')}</div></div>
+    <div class="pv-t">${fm(r.tot)}</div></div>`).join('');
+}
+document.querySelectorAll('#pvMode button').forEach(b=>b.onclick=()=>{ pvMode=b.dataset.m; document.querySelectorAll('#pvMode button').forEach(x=>x.classList.toggle('on',x===b)); pedVend(); });
+
+/* ---------- eventos ---------- */
+const bind=(ids,key,pre)=>ids.forEach(i=>$(i).addEventListener('change',e=>{F[key]=pre?e.target.checked:e.target.value;render();}));
+bind(['fDesde','aDesde'],'desde'); bind(['fHasta','aHasta'],'hasta'); bind(['fCli','aCli'],'cli'); bind(['fEst','aEst'],'est'); bind(['fVen','aVen'],'ven');
+bind(['aCan'],'canal'); bind(['aLin'],'lin'); bind(['aWa'],'wa',1); bind(['aMail'],'mail',1);
+['rkOrd','rkTop','rkPay'].forEach(i=>$(i).addEventListener('change',()=>{ rkPage=1; ranking(filtered()); hydrateIcons(); }));
+const clear=()=>{Object.assign(F,{desde:'',hasta:'',cli:'',est:'',ven:'',canal:'',lin:'',wa:false,mail:false});render();};
+$('bClear').onclick=clear; $('aClear').onclick=clear;
+const openD=o=>{$('drawer').classList.toggle('open',o);$('dBg').classList.toggle('open',o);};
+$('bAdv').onclick=()=>openD(true); $('dClose').onclick=()=>openD(false); $('dBg').onclick=()=>openD(false);
+$('aApply').onclick=()=>{openD(false);toast('Filtros aplicados');};
+document.addEventListener('keydown',e=>{if(e.key==='Escape')openD(false);});
+$('bCsv').onclick=()=>{ // exporta el ranking visible
+  const rows=[['Cliente','Vendedor','Dirección','Forma de pago','N° pedidos','Monto total'],...window._rk.map(c=>[c.name,c.vendor,c.city,c.pay,c.orders,c.amount])];
+  const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob(['﻿'+rows.map(r=>r.join(';')).join('\n')],{type:'text/csv'})); a.download='ranking_clientes.csv'; a.click();
+};
+
+/* ---------- Modales Historial / Editar (cliente del ranking) ---------- */
+const LOG={}; // cambios hechos en la sesión por cliente
+const closeCm=()=>$('cm').classList.remove('open');
+const showCm=h=>{ $('cmBox').innerHTML=h; $('cm').classList.add('open'); hydrateIcons($('cmBox')); };
+$('cm').addEventListener('click',e=>{ if(e.target===$('cm')) closeCm(); });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeCm(); });
+function openHist(id){
+  const c=CL.find(x=>x.id===id), ev=[];
+  // Eventos de ejemplo derivados del cliente (determinista) + cambios reales de esta sesión
+  (LOG[id]||[]).forEach(l=>ev.push({t:l.t,ic:'pencil',h:'Datos actualizados',d:l.ch.map(x=>`${x.f}: <s>${x.a}</s> → <b>${x.d}</b>`).join('<br>')}));
+  const d=new Date(c.date+'T12:00'); const f=n=>{const x=new Date(d);x.setDate(x.getDate()-n);return x.toLocaleDateString('es-PE');};
+  ev.push({t:d.toLocaleDateString('es-PE'),ic:'cart',h:'Último pedido · '+c.pay,d:`Pedido por ${money(Math.round(c.amount/c.orders))} registrado por ${c.vendor}`},
+          {t:f(9),ic:'message',h:'Conversación por '+c.canal,d:c.att?'Cliente atendido':'Sin respuesta del cliente'},
+          {t:f(24),ic:'trend',h:'Calificación: '+c.cat,d:'Asignada por '+c.vendor},
+          {t:f(60),ic:'users',h:'Cliente registrado',d:'Vendedor asignado: '+c.vendor});
+  showCm(`<div class="modal-h"><h3>Historial · ${c.name}</h3><button class="icon-btn" onclick="closeCm()">${icon('x')}</button></div>
+  <div class="modal-b"><div class="hl">${ev.map(e=>`<div class="hi"><span class="hd">${icon(e.ic)}</span><div><b>${e.h}</b> <small>· ${e.t}</small><div class="hx">${e.d}</div></div></div>`).join('')}</div></div>
+  <div class="modal-f"><button class="btn btn-primary" onclick="closeCm()">Cerrar</button></div>`);
+}
+function openEdit(id){
+  const c=CL.find(x=>x.id===id), opt=(a,v)=>a.map(x=>`<option ${x===v?'selected':''}>${x}</option>`).join('');
+  showCm(`<form id="eF" novalidate><div class="modal-h"><h3>Editar · ${c.name}</h3><button type="button" class="icon-btn" onclick="closeCm()">${icon('x')}</button></div>
+  <div class="modal-b">
+    <div class="field"><label>Vendedor asignado</label><select class="select" id="eV">${opt(VEND,c.vendor)}</select></div>
+    <div class="grid-2"><div class="field"><label>Calificación</label><select class="select" id="eC">${opt(Object.keys(CATS),c.cat)}</select></div>
+    <div class="field"><label>Forma de pago</label><select class="select" id="eP">${opt(['Contado','Crédito','Letras'],c.pay)}</select></div></div>
+    <div class="field"><label>Dirección</label><input class="input" id="eD" value="${c.city}"></div>
+    <div class="login-err" id="eE" hidden>La dirección es obligatoria.</div>
+  </div>
+  <div class="modal-f"><button type="button" class="btn btn-ghost" onclick="closeCm()">Cancelar</button><button class="btn btn-primary">Guardar cambios</button></div></form>`);
+  $('eF').onsubmit=e=>{ e.preventDefault();
+    const n={vendor:$('eV').value,cat:$('eC').value,pay:$('eP').value,city:$('eD').value.trim()};
+    if(!n.city){ $('eE').hidden=false; return; }
+    const L={vendor:'Vendedor',cat:'Calificación',pay:'Forma de pago',city:'Dirección'};
+    const ch=Object.keys(L).filter(k=>c[k]!==n[k]).map(k=>({f:L[k],a:c[k],d:n[k]}));
+    if(ch.length){ (LOG[id]=LOG[id]||[]).unshift({t:new Date().toLocaleString('es-PE'),ch}); Object.assign(c,n); }
+    closeCm(); render(); toast(ch.length?'Cliente actualizado':'Sin cambios'); };
+}
+
+/* ---------- init ---------- */
+(function(){
+  fillSelects(); render();
+})();
+</script>
+</body>
+</html>
