@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SigOne CRM · Pedidos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Sora:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/primeicons/primeicons.css">
+<link rel="stylesheet" href="assets/styles.css?v=20261119b">
+<link rel="stylesheet" href="assets/config.css?v=20261119a">
+<style>
+  .head-actions{display:flex;gap:10px;flex-wrap:wrap}
+  .seg{display:inline-flex;background:#fff;border:1px solid var(--border);border-radius:14px;padding:4px;box-shadow:var(--shadow);margin-bottom:16px}
+  .seg button{padding:9px 16px;border-radius:10px;font-weight:700;color:#4B5368;display:flex;gap:8px;align-items:center;transition:.15s}
+  .seg button:hover{color:var(--orange)}
+  .seg button.on{background:var(--navy);color:#fff}
+  .seg button i{font-style:normal;font-size:11.5px;background:#EEF0F5;color:#5A6379;border-radius:99px;padding:1px 8px}
+  .seg button.on i{background:rgba(255,255,255,.18);color:#fff}
+  .bulk-bar{display:flex;align-items:center;gap:12px;padding:10px 18px;border-bottom:1px solid var(--border);background:#FFF8F2;font-weight:600}
+  .bulk-bar .sp{margin-left:auto}
+  .chk{width:17px;height:17px;accent-color:var(--orange);cursor:pointer}
+  .num{text-align:right;font-variant-numeric:tabular-nums}
+  .btn:disabled{opacity:.45;cursor:not-allowed;box-shadow:none;transform:none}
+  .scope-note{display:flex;gap:8px;align-items:center;color:var(--muted);font-size:13px;margin:-6px 0 16px}
+  .det-items{width:100%;border-collapse:collapse;font-size:13px}
+  .det-items th{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;text-align:left;padding:6px 0}
+  .det-items td{padding:7px 0;border-top:1px solid var(--border)}
+  .det-items td:last-child,.det-items th:last-child{text-align:right}
+  .det-meta{display:grid;grid-template-columns:1fr 1fr;gap:6px 18px;font-size:13px;margin-bottom:12px}
+  .det-meta span{color:var(--muted)}
+  .modal-b{max-height:68vh;overflow:auto}
+</style>
+</head>
+<body data-module="pedidos" data-side="pedidos">
+<div class="app">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main">
+    <header class="topbar" id="topbar"></header>
+    <main class="content">
+      <div class="page-head">
+        <div>
+          <h1>Pedidos</h1>
+          <p>Pedidos creados desde conversaciones</p>
+        </div>
+        <div class="head-actions">
+          <button class="btn btn-ghost" id="btnXls" title="Descargar los pedidos filtrados en Excel"><i data-icon="download"></i>Descargar Excel</button>
+          <button class="btn btn-primary" id="btnNew" title="Crear un pedido nuevo"><i data-icon="plus"></i>Nuevo pedido</button>
+        </div>
+      </div>
+      <div class="scope-note" id="scope"></div>
+
+      <form class="filters-card" id="filters">
+        <div class="filter-search"><label for="q">BUSCAR</label><div class="input-icon"><i class="pi pi-search ic"></i><input id="q" placeholder="N.º de pedido o cliente..."></div></div>
+        <div class="filter-select" id="vendWrap"><label for="fVend">VENDEDOR</label><select class="select" id="fVend"></select></div>
+        <div class="filter-select"><label for="fEst">ESTADO</label><select class="select" id="fEst"><option value="">Todos</option><option>Pendiente</option><option>Enviado</option></select></div>
+        <div class="filter-select wide"><label>RANGO DE FECHAS</label><div class="rp" data-from="fDesde" data-to="fHasta"></div></div>
+        <button type="submit" class="btn-filter">Filtrar</button>
+      </form>
+
+      <section class="table-card">
+        <div class="table-card-header"><h2>Lista de pedidos</h2><span id="count"></span></div>
+        <div class="bulk-bar" id="bar" hidden><span id="selTxt"></span><span class="sp"></span><button class="btn btn-primary btn-sm" id="btnSendSel"><i data-icon="send"></i>Enviar seleccionados</button></div>
+        <div style="overflow:auto"><table class="dgrid">
+          <thead><tr><th style="width:44px"><input type="checkbox" class="chk" id="chkAll" aria-label="Seleccionar pendientes"></th><th>N.º pedido</th><th>Fecha</th><th>Cliente</th><th>Vendedor</th><th>Forma de pago</th><th class="r">Total</th><th>Estado</th><th class="r" style="width:110px">Acciones</th></tr></thead>
+          <tbody id="grid"></tbody>
+        </table></div>
+        <div class="pager" id="pager"></div>
+      </section>
+    </main>
+  </div>
+</div>
+<div class="modal-bg" id="dlg"><div class="modal" id="dlgBox"></div></div>
+
+<script src="assets/app.js?v=20261119a"></script>
+<script src="assets/store.js?v=20261119a"></script>
+<script src="assets/pedido-form.js?v=20261119b"></script>
+<script src="assets/pedidos.js?v=20261119b"></script>
+</body>
+</html>

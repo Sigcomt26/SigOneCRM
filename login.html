@@ -9,8 +9,8 @@
 <!-- Mismas fuentes que el login de SigOne Legal -->
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/primeicons/primeicons.css">
-<link rel="stylesheet" href="assets/styles.css?v=20261019c">
-<link rel="stylesheet" href="assets/login.css?v=20261019c">
+<link rel="stylesheet" href="assets/styles.css?v=20261022a">
+<link rel="stylesheet" href="assets/login.css?v=20261022a">
 </head>
 <body class="sigone-auth-page">
 
@@ -55,7 +55,8 @@
     </form>
   </section>
 
-<script src="assets/app.js?v=20261019c"></script>
+<script src="assets/app.js?v=20261022a"></script>
+<script src="assets/store.js?v=20261119a"></script>
 <script>
   document.getElementById('mobBrand').innerHTML = logoFull('m');
 
@@ -72,9 +73,12 @@
     if (!email.value.trim() || !pass.value) { err.hidden = false; return; }
     err.hidden = true;
     try { remember.checked ? localStorage.setItem('sigone_crm_email', email.value) : localStorage.removeItem('sigone_crm_email'); } catch(e){}
-    const isAdmin = email.value.toLowerCase().startsWith('admin');
+    // Se busca al usuario por correo en Configuración › Usuarios (su rol define permisos y qué pedidos ve)
+    const found = DB.users.find(u => u.mail.toLowerCase() === email.value.trim().toLowerCase() && u.activo);
     const local = email.value.split('@')[0];
-    const user = isAdmin ? DEFAULT_USER : { name: local.charAt(0).toUpperCase() + local.slice(1), role: 'Vendedor' };
+    const user = found ? { name: found.nombre, role: found.rol, mail: found.mail }
+      : email.value.toLowerCase().startsWith('admin') ? DEFAULT_USER
+      : { name: local.charAt(0).toUpperCase() + local.slice(1), role: 'Vendedor', mail: email.value.trim() };
     try { sessionStorage.setItem(SESSION_KEY, JSON.stringify(user)); } catch(e){}
     location.href = 'inicio.html';
   });

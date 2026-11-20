@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SigOne CRM · Asignar metas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Sora:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/primeicons/primeicons.css">
+<link rel="stylesheet" href="assets/styles.css?v=20261120a">
+<link rel="stylesheet" href="assets/config.css?v=20261120a">
+</head>
+<body data-module="metas" data-side="asignar-metas">
+<div class="app">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main">
+    <header class="topbar" id="topbar"></header>
+    <main class="content">
+      <div class="page-head">
+        <div><h1>Asignar metas</h1><p>Metas mensuales de ventas y pedidos asignadas a cada vendedor</p></div>
+        <button class="btn btn-primary" id="btnAsig" title="Asignar una meta a un vendedor"><i data-icon="plus"></i>Asignar meta</button>
+      </div>
+
+      <form class="filters-card" id="aFilters">
+        <div class="filter-select" style="flex:1 1 220px"><label for="aVen">VENDEDOR</label><select class="select" id="aVen"></select></div>
+        <div class="filter-select" style="flex:1 1 220px"><label for="aPer">PERIODO</label><select class="select" id="aPer"></select></div>
+        <button type="submit" class="btn-filter">Filtrar</button>
+      </form>
+      <section class="table-card">
+        <div class="table-card-header"><h2>Metas asignadas por vendedor</h2><span id="aCount"></span></div>
+        <div style="overflow:auto"><table class="dgrid"><thead><tr><th>Vendedor</th><th>Periodo</th><th class="r">Meta de ventas</th><th class="r">Meta de pedidos</th><th class="r">Ticket objetivo</th><th class="r" style="width:110px">Acciones</th></tr></thead><tbody id="aGrid"></tbody></table></div>
+        <div class="pager" id="aPager"></div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<!-- Modal asignar / editar meta -->
+<div class="modal-bg" id="modal"><form class="modal" id="mForm" novalidate>
+  <div class="modal-h"><h3 id="mTitle">Asignar meta</h3><button type="button" class="icon-btn" id="mClose" aria-label="Cerrar" title="Cerrar"><i data-icon="x"></i></button></div>
+  <div class="modal-b">
+    <div class="grid-2">
+      <div class="field"><label>Vendedor</label><select class="select" id="fVen"></select></div>
+      <div class="field"><label>Periodo</label><select class="select" id="fPer"></select></div>
+    </div>
+    <div class="grid-2">
+      <div class="field"><label>Meta de ventas (S/)</label><input class="input" id="fMonto" type="number" min="0" step="1000"></div>
+      <div class="field"><label>Meta de pedidos</label><input class="input" id="fPed" type="number" min="0" step="5"></div>
+    </div>
+    <div class="login-err" id="mErr" hidden></div>
+  </div>
+  <div class="modal-f"><button type="button" class="btn btn-ghost" id="mCancel">Cancelar</button><button class="btn btn-primary" type="submit">Guardar meta</button></div>
+</form></div>
+
+<!-- Confirmar eliminación -->
+<div class="modal-bg" id="dm"><div class="modal">
+  <div class="modal-h"><h3>Eliminar meta</h3><button type="button" class="icon-btn" id="dClose" aria-label="Cerrar" title="Cerrar"><i data-icon="x"></i></button></div>
+  <div class="modal-b"><p id="dTxt"></p></div>
+  <div class="modal-f"><button type="button" class="btn btn-ghost" id="dCancel">Cancelar</button><button class="btn btn-primary" id="dOk">Eliminar</button></div>
+</div></div>
+
+<script src="assets/app.js?v=20261120a"></script>
+<script src="assets/store.js?v=20261119a"></script>
+<script>
+/* =====================================================================
+   Asignar metas (submódulo de Metas)
+   Tabla de metas por vendedor y periodo, guardada en DB.metas (store.js).
+   ===================================================================== */
+if(!can('metas','crear') && !can('metas','editar')){ location.replace('metas.html'); }
+const $=id=>document.getElementById(id);
+const money=n=>'S/ '+Number(n).toLocaleString('es-PE');
+const PERIODO_ACTUAL='Octubre 2026';
+const PERIODOS=['Agosto 2026','Septiembre 2026','Octubre 2026','Noviembre 2026','Diciembre 2026'];
+let page=1, size=PAGE_DEFAULT;
+
+function fillFilters(){
+  const keep=(id,html)=>{ const el=$(id), v=el.value; el.innerHTML=html; el.value=[...el.options].some(o=>o.value===v)?v:''; };
+  keep('aVen','<option value="">Todos</option>'+vendedores().map(v=>`<option>${esc(v)}</option>`).join(''));
+  keep('aPer','<option value="">Todos</option>'+[...new Set(DB.metas.map(m=>m.periodo))].sort((a,b)=>PERIODOS.indexOf(b)-PERIODOS.indexOf(a)).map(p=>`<option>${p}</option>`).join(''));
+}
+function render(){
+  fillFilters();
+  const vf=$('aVen').value, pf=$('aPer').value;
+  const list=DB.metas.filter(m=>(!vf||m.vendedor===vf)&&(!pf||m.periodo===pf))
+    .sort((a,b)=>PERIODOS.indexOf(b.periodo)-PERIODOS.indexOf(a.periodo)||a.vendedor.localeCompare(b.vendedor));
+  $('aCount').textContent=`${list.length} registros`;
+  const [a,b]=renderPager($('aPager'), { get page(){return page}, set page(v){page=v}, get size(){return size}, set size(v){size=v} }, list.length, 'metas', render);
+  $('aGrid').innerHTML=list.slice(a,b).map(m=>`<tr><td><b>${esc(m.vendedor)}</b></td><td class="nw">${esc(m.periodo)}${m.periodo===PERIODO_ACTUAL?' <span class="badge orange">En curso</span>':''}</td>
+    <td class="r nw"><b>${money(m.metaVentas)}</b></td><td class="r nw">${m.metaPedidos}</td><td class="r nw">${m.metaPedidos?money(Math.round(m.metaVentas/m.metaPedidos)):'—'}</td>
+    <td class="r nw"><button class="table-action table-action--edit" data-e="${m.id}" title="Editar meta" aria-label="Editar meta">${icon('pencil')}</button><button class="table-action table-action--delete" data-x="${m.id}" title="Eliminar meta" aria-label="Eliminar meta">${icon('trash')}</button></td></tr>`).join('')
+    || `<tr><td colspan="6" class="empty-cell">No hay metas asignadas con estos filtros</td></tr>`;
+  $('aGrid').querySelectorAll('[data-e]').forEach(x=>x.onclick=()=>openM(+x.dataset.e));
+  $('aGrid').querySelectorAll('[data-x]').forEach(x=>x.onclick=()=>askDelete(+x.dataset.x));
+  hydrateIcons();
+}
+
+/* ---------- Modal asignar / editar meta ---------- */
+let editId=null;
+function openM(id=null){
+  editId=id; const m=id?DB.metas.find(x=>x.id===id):null;
+  $('fVen').innerHTML=vendedores().map(v=>`<option>${esc(v)}</option>`).join('');
+  $('fPer').innerHTML=PERIODOS.map(p=>`<option>${p}</option>`).join('');
+  if(m){ $('fVen').value=m.vendedor; $('fPer').value=m.periodo; } else $('fPer').value=PERIODO_ACTUAL;
+  $('fVen').disabled=$('fPer').disabled=!!m;
+  $('fMonto').value=m?m.metaVentas:''; $('fPed').value=m?m.metaPedidos:'';
+  $('mErr').hidden=true; $('mTitle').textContent=m?`Editar meta · ${m.vendedor}`:'Asignar meta'; $('modal').classList.add('open');
+}
+const closeM=()=>$('modal').classList.remove('open');
+$('mClose').onclick=$('mCancel').onclick=closeM;
+$('modal').addEventListener('click',e=>{ if(e.target===$('modal')) closeM(); });
+$('btnAsig').onclick=()=>openM();
+$('mForm').onsubmit=e=>{ e.preventDefault();
+  const v=$('fVen').value, per=$('fPer').value, mm=+$('fMonto').value, p=+$('fPed').value, err=t=>{ $('mErr').textContent=t; $('mErr').hidden=false; };
+  if(!v) return err('Elige el vendedor.');
+  if(!(mm>0&&p>0)) return err('Ingresa una meta de ventas y de pedidos mayor a cero.');
+  if(DB.metas.some(x=>x.id!==editId&&x.vendedor===v&&x.periodo===per)) return err(`${v} ya tiene una meta para ${per}. Edítala desde la tabla.`);
+  if(editId){ const m=DB.metas.find(x=>x.id===editId); m.metaVentas=mm; m.metaPedidos=p; }
+  else DB.metas.push({ id:nextId(DB.metas), vendedor:v, periodo:per, metaVentas:mm, metaPedidos:p });
+  saveDB(); closeM(); render(); toast(`Meta guardada para ${v} · ${per}`); };
+
+/* ---------- Eliminar ---------- */
+let delId=null;
+function askDelete(id){ delId=id; const m=DB.metas.find(x=>x.id===id); $('dTxt').innerHTML=`¿Eliminar la meta de <b>${esc(m.vendedor)}</b> para <b>${esc(m.periodo)}</b>? Esta acción no se puede deshacer.`; $('dm').classList.add('open'); }
+const closeD=()=>$('dm').classList.remove('open');
+$('dClose').onclick=$('dCancel').onclick=closeD; $('dm').addEventListener('click',e=>{ if(e.target===$('dm')) closeD(); });
+$('dOk').onclick=()=>{ DB.metas=DB.metas.filter(x=>x.id!==delId); saveDB(); closeD(); render(); toast('Meta eliminada'); };
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ closeM(); closeD(); } });
+
+$('aFilters').addEventListener('submit',e=>{ e.preventDefault(); page=1; render(); });
+['aVen','aPer'].forEach(i=>$(i).addEventListener('change',()=>{ page=1; render(); }));
+document.addEventListener('DOMContentLoaded',render);
+</script>
+</body>
+</html>

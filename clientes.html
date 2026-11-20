@@ -3,12 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>SigOne CRM · Gestión de Clientes</title>
+<title>SigOne CRM · Conversaciones</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Sora:wght@400;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/primeicons/primeicons.css">
-<link rel="stylesheet" href="assets/styles.css?v=20261019c">
+<link rel="stylesheet" href="assets/styles.css?v=20261119b">
 <style>
 /* ===== Gestión de clientes (Balsamiq: lista | detalle | preferencias) ===== */
 .chips{display:flex;gap:8px;flex-wrap:wrap}
@@ -18,7 +18,7 @@
 .chip.on{background:var(--orange);border-color:var(--orange);color:#fff}
 .split{display:grid;grid-template-columns:330px 1fr;height:calc(100vh - 76px - 170px);min-height:560px;overflow:hidden}
 .cl-side{border-right:1px solid var(--border);display:flex;flex-direction:column;min-height:0}
-.cl-side .search{padding:16px}
+.cl-side .search{margin:16px}
 .cl-list{overflow:auto;flex:1;padding:0 10px 12px}
 .cl-item{display:flex;gap:12px;align-items:center;padding:12px 10px 12px 14px;border-radius:12px;cursor:pointer;position:relative;margin-bottom:4px;border:1px solid transparent;width:100%;text-align:left}
 .cl-item::before{content:"";position:absolute;left:0;top:14px;bottom:14px;width:4px;border-radius:4px;background:var(--stage,#C4C9D6)}
@@ -166,8 +166,8 @@ table.t td{padding:11px 6px;border-top:1px solid var(--border);font-size:13.5px}
       <section id="viewList">
         <div class="page-head">
           <div>
-            <div class="crumb">Clientes <i data-icon="chevron" style="transform:rotate(-90deg)"></i> <b>Gestión con clientes</b></div>
-            <h1>Gestión con clientes</h1>
+            <h1>Conversaciones</h1>
+            <p>Atención a clientes: información, preferencias, seguimiento y creación de pedidos</p>
           </div>
           <div class="chips" id="chips"></div>
         </div>
@@ -201,7 +201,9 @@ table.t td{padding:11px 6px;border-top:1px solid var(--border);font-size:13.5px}
   </div>
 </div>
 <div class="modal-bg" id="cmodal"><div class="modal" id="cmBox"></div></div>
-<script src="assets/app.js?v=20261019c"></script>
-<script src="assets/clientes.js?v=20261019c"></script>
+<script src="assets/app.js?v=20261119a"></script>
+<script src="assets/store.js?v=20261119a"></script>
+<script src="assets/pedido-form.js?v=20261119b"></script>
+<script src="assets/clientes.js?v=20261119b"></script>
 </body>
 </html>

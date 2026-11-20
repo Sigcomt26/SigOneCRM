@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SigOne CRM · Metas de vendedores</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Sora:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/primeicons/primeicons.css">
+<link rel="stylesheet" href="assets/styles.css?v=20261120a">
+<link rel="stylesheet" href="assets/config.css?v=20261120a">
+<style>
+  /* ===== Metas de vendedores ===== */
+  .tools{display:flex;gap:10px;align-items:center}
+  .tools .select{width:auto;min-width:170px}
+  .sum{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:16px}
+  .sum .card{padding:18px 20px}
+  .sum .l{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#64748b}
+  .sum .n{font-family:var(--font-display);font-size:28px;font-weight:800;color:#202532;margin:6px 0 2px}
+  .sum .s{font-size:13px;color:#64748b}
+  .meter{height:6px;border-radius:99px;background:#EEF0F5;overflow:hidden;margin-top:10px;position:relative}
+  .meter i{display:block;height:100%;border-radius:99px;background:#f47721}
+  .meter.green i{background:#16A34A}.meter.amber i{background:#E39B0B}.meter.red i{background:#DC2626}
+  .meter .pace{position:absolute;top:-3px;bottom:-3px;width:2px;background:#202532;opacity:.55}
+  .vgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .vc{padding:20px}
+  .vc-h{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+  .vc-h .avatar{width:42px;height:42px;font-size:14px}
+  .vc-h b{display:block;font-size:15px;color:#202532}.vc-h small{color:#64748b;font-size:12.5px}
+  .vc-h .sp{margin-left:auto}
+  .ring{position:relative;width:118px;height:118px;margin:0 auto 14px}
+  .ring svg{transform:rotate(-90deg)}
+  .ring .ctr{position:absolute;inset:0;display:grid;place-items:center;text-align:center}
+  .ring b{font-family:var(--font-display);font-size:26px;line-height:1;color:#202532}.ring small{display:block;font-size:11.5px;color:#64748b;margin-top:2px}
+  .row{margin-top:12px}
+  .row .t{display:flex;justify-content:space-between;font-size:13px;color:#566071}
+  .row .t b{color:#202532}
+  .vc-f{display:flex;justify-content:space-between;align-items:center;margin-top:16px;padding-top:12px;border-top:1px dashed var(--border);font-size:12.5px;color:#64748b}
+  .legend{display:flex;gap:16px;align-items:center;font-size:12.5px;color:#64748b;margin:0 0 12px}
+  .legend i{display:inline-block;width:2px;height:12px;background:#202532;opacity:.55;margin-right:6px;vertical-align:-2px}
+  .hist{margin-top:16px}
+  .num{text-align:right;font-variant-numeric:tabular-nums}
+  @media(max-width:1200px){.sum{grid-template-columns:repeat(2,1fr)}.vgrid{grid-template-columns:1fr 1fr}}
+  @media(max-width:760px){.sum,.vgrid{grid-template-columns:1fr}}
+</style>
+</head>
+<body data-module="metas" data-side="metas">
+<div class="app">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main">
+    <header class="topbar" id="topbar"></header>
+    <main class="content">
+      <div class="page-head">
+        <div><h1>Metas de vendedores</h1><p>Asignación de metas mensuales y avance de cumplimiento de cada vendedor</p></div>
+        <div class="tools"><select class="select" id="mes" title="Periodo"><option>Octubre 2026</option><option>Septiembre 2026</option><option>Agosto 2026</option></select></div>
+      </div>
+
+      <div id="vAvance">
+        <section class="sum" id="sum"></section>
+        <div class="legend"><span><i></i>Ritmo esperado al día de hoy</span></div>
+        <section class="vgrid" id="vgrid"></section>
+        <section class="card hist" style="overflow:hidden">
+          <div style="padding:16px 18px 6px"><h3 style="font-size:16px">Cumplimiento de meses anteriores</h3></div>
+          <div style="overflow:auto"><table class="dgrid"><thead><tr><th>Vendedor</th><th class="r">Agosto</th><th class="r">Septiembre</th><th class="r">Octubre (en curso)</th></tr></thead><tbody id="hist"></tbody></table></div>
+        </section>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<script src="assets/app.js?v=20261022a"></script>
+<script src="assets/store.js?v=20261119a"></script>
+<script>
+/* =====================================================================
+   Metas de vendedores
+   - Avance: ventas y pedidos del mes frente a la meta asignada (datos de ejemplo).
+   - Las metas se asignan en el submódulo «Asignar metas» (metas-asignar.html), guardadas en DB.metas (store.js).
+   El avance se compara con el "ritmo esperado": % del mes transcurrido.
+   ===================================================================== */
+const $=id=>document.getElementById(id);
+const money=n=>'S/ '+Number(n).toLocaleString('es-PE');
+const DAY=22, DAYS=31, PACE=Math.round(DAY*100/DAYS);          // 22 de octubre → 71 % del mes
+const PERIODO_ACTUAL='Octubre 2026';
+const PERIODOS=['Agosto 2026','Septiembre 2026','Octubre 2026','Noviembre 2026','Diciembre 2026'];
+const AVC=['alt1','alt2','alt4','alt3'];
+// Ventas / pedidos del mes (ejemplo): la meta sale de DB.metas
+const AVANCE={ 'Juan Perez':{venta:58900,ped:168,hist:[104,98]}, 'Carlos Ramírez':{venta:46200,ped:140,hist:[91,102]}, 'Lucía Fernández':{venta:27350,ped:76,hist:[86,79]} };
+const puedeAsignar=()=>can('metas','crear')||can('metas','editar');
+const metaDe=(v,per=PERIODO_ACTUAL)=>DB.metas.find(m=>m.vendedor===v&&m.periodo===per);
+const V=()=>vendedores().map((name,i)=>{ const a=AVANCE[name]||{venta:0,ped:0,hist:[0,0]}, m=metaDe(name)||{metaVentas:0,metaPedidos:0};
+  return { name, av:AVC[i%AVC.length], meta:m.metaVentas, metaPed:m.metaPedidos, venta:a.venta, ped:a.ped, hist:a.hist, sinMeta:!metaDe(name) }; });
+const pct=(a,b)=>b?Math.round(a*100/b):0;
+function estado(p){ return p>=100?['green','Cumplida']:p>=PACE-5?['blue','En camino']:p>=PACE-20?['amber','Por debajo del ritmo']:['red','En riesgo']; }
+const color=p=>p>=100?'green':p>=PACE-5?'':p>=PACE-20?'amber':'red';
+
+/* ---------- Avance ---------- */
+function renderAvance(){
+  const D=V();
+  const tm=D.reduce((s,v)=>s+v.meta,0), tv=D.reduce((s,v)=>s+v.venta,0), tmp=D.reduce((s,v)=>s+v.metaPed,0), tp=D.reduce((s,v)=>s+v.ped,0);
+  $('sum').innerHTML=[
+    ['Meta del equipo',money(tm),PERIODO_ACTUAL],
+    ['Ventas del mes',money(tv),pct(tv,tm)+'% de la meta',pct(tv,tm)],
+    ['Pedidos del mes',tp,`${pct(tp,tmp)}% de ${tmp} pedidos`,pct(tp,tmp)],
+    ['Días restantes',DAYS-DAY,`Ritmo esperado hoy: ${PACE}%`]
+  ].map(([l,n,s,m])=>`<div class="card"><div class="l">${l}</div><div class="n">${n}</div><div class="s">${s}</div>${m!=null?`<div class="meter ${color(m)}"><i style="width:${Math.min(m,100)}%"></i><span class="pace" style="left:${PACE}%"></span></div>`:''}</div>`).join('');
+  $('vgrid').innerHTML=D.map(v=>{
+    const p=pct(v.venta,v.meta), pp=pct(v.ped,v.metaPed), [bc,bl]=v.sinMeta?['gray','Sin meta']:estado(p), R=50, C=2*Math.PI*R;
+    const stroke={green:'#16A34A',blue:'#f47721',amber:'#E39B0B',red:'#DC2626',gray:'#C3CBD9'}[bc];
+    return `<article class="card vc">
+      <div class="vc-h"><div class="avatar ${v.av}">${v.name.split(' ').map(w=>w[0]).join('')}</div><div><b>${esc(v.name)}</b><small>Vendedor</small></div>
+        <span class="badge ${bc} sp">${bl}</span></div>
+      <div class="ring"><svg width="118" height="118" viewBox="0 0 118 118"><circle cx="59" cy="59" r="${R}" fill="none" stroke="#EEF0F5" stroke-width="10"/>
+        <circle cx="59" cy="59" r="${R}" fill="none" stroke="${stroke}" stroke-width="10" stroke-linecap="round" stroke-dasharray="${C*Math.min(p,100)/100} ${C}"/></svg>
+        <div class="ctr"><div><b>${p}%</b><small>de la meta</small></div></div></div>
+      <div class="row"><div class="t"><span>Ventas</span><span><b>${money(v.venta)}</b> de ${money(v.meta)}</span></div><div class="meter ${color(p)}"><i style="width:${Math.min(p,100)}%"></i><span class="pace" style="left:${PACE}%"></span></div></div>
+      <div class="row"><div class="t"><span>Pedidos</span><span><b>${v.ped}</b> de ${v.metaPed}</span></div><div class="meter ${color(pp)}"><i style="width:${Math.min(pp,100)}%"></i><span class="pace" style="left:${PACE}%"></span></div></div>
+      <div class="vc-f"><span>${v.sinMeta?'Aún no tiene meta asignada':'Faltan '+money(Math.max(0,v.meta-v.venta))}</span></div>
+    </article>`;}).join('');
+  $('hist').innerHTML=D.map(v=>{ const p=pct(v.venta,v.meta), cell=x=>`<span class="badge ${x>=100?'green':x>=90?'amber':'red'}">${x}%</span>`;
+    return `<tr><td><b>${esc(v.name)}</b></td><td class="r">${cell(v.hist[0])}</td><td class="r">${cell(v.hist[1])}</td><td class="r"><span class="badge gray">${p}% al día ${DAY}</span></td></tr>`; }).join('');
+}
+
+function render(){ renderAvance(); hydrateIcons(); $('mes').onchange=()=>toast('Vista de '+$('mes').value+' (demo)'); }
+document.addEventListener('DOMContentLoaded',render);
+</script>
+</body>
+</html>

@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SigOne CRM · Configuración</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Sora:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/primeicons/primeicons.css">
+<link rel="stylesheet" href="assets/styles.css?v=20261119a">
+<link rel="stylesheet" href="assets/dashboard.css?v=20261119a">
+<link rel="stylesheet" href="assets/config.css?v=20261119a">
+<style>
+  .req{color:var(--red)}
+  .role-hint{font-size:12.5px;color:var(--muted);margin-top:6px}
+  .field.full{grid-column:1/-1}
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .modal.wide{max-width:680px}
+  .modal-b{max-height:68vh;overflow:auto}
+  .swatches{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .swatches button{width:26px;height:26px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 1px var(--border)}
+  .swatches button.on{box-shadow:0 0 0 2px var(--navy)}
+  .swatches input[type=color]{width:34px;height:30px;border:1px solid var(--border);border-radius:8px;padding:2px;background:#fff;cursor:pointer}
+  .dot{display:inline-block;width:11px;height:11px;border-radius:50%;background:var(--c);margin-right:8px;vertical-align:-1px}
+  .tipo-pill{display:inline-flex;align-items:center;gap:7px;background:color-mix(in srgb,var(--c) 14%,#fff);color:color-mix(in srgb,var(--c) 68%,#000);font-weight:800;font-size:12.5px;padding:4px 12px;border-radius:99px}
+  .tipo-pill::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--c)}
+  .head-actions{display:flex;gap:10px;flex-wrap:wrap}
+  .bulk-bar{display:flex;align-items:center;gap:12px;padding:10px 18px;border-bottom:1px solid var(--border);background:#FFF8F2;font-weight:600}
+  .bulk-bar .sp{margin-left:auto}
+  .btn-danger{background:var(--red);color:#fff}
+  .btn-danger:hover{background:#B91C1C}
+  .btn-danger:disabled,.btn:disabled{opacity:.45;cursor:not-allowed;box-shadow:none;transform:none}
+  .chk{width:17px;height:17px;accent-color:var(--orange);cursor:pointer}
+  .num{text-align:right;font-variant-numeric:tabular-nums}
+  .upl{border:2px dashed #F4B57E;background:#FFFAF5;border-radius:14px;padding:18px;text-align:center;display:grid;gap:10px;justify-items:center}
+  .upl small{color:var(--muted)}
+  .upl-sum{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+  .upl-sum div{border:1px solid var(--border);border-radius:12px;padding:10px 12px}
+  .upl-sum b{font-size:22px;display:block;line-height:1.1}
+  .upl-sum small{color:var(--muted);font-weight:700;text-transform:uppercase;font-size:10.5px;letter-spacing:.6px}
+  .upl-err{max-height:130px;overflow:auto;background:var(--red-50);color:#991B1B;border-radius:10px;padding:8px 12px;font-size:12.5px}
+  .upl-tbl{overflow:auto;border:1px solid var(--border);border-radius:12px}
+  .upl-tbl table{width:100%;border-collapse:collapse;font-size:12.5px}
+  .upl-tbl th,.upl-tbl td{padding:7px 10px;text-align:left;border-bottom:1px solid #EEF1F6;white-space:nowrap}
+  .upl-tbl th{background:#F8FAFC;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#64748b;position:sticky;top:0}
+  .modal.upl-big{max-width:1020px}
+  .upl-guide{border:1px solid var(--border);border-radius:12px;overflow:auto}
+  .upl-guide table{width:100%;border-collapse:collapse;font-size:12.5px}
+  .upl-guide th,.upl-guide td{padding:7px 10px;text-align:left;border-bottom:1px solid #EEF1F6;vertical-align:top}
+  .upl-guide th{background:#F8FAFC;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#64748b}
+  .upl-guide tr:last-child td{border-bottom:0}
+  .upl-guide code{background:#F1F3F8;border-radius:6px;padding:1px 6px;font-size:12px}
+  .upl-step{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+  .upl-step b.n{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--orange);color:#fff;font-size:12px;margin-right:8px}
+  .upl-drop{border:2px dashed #F4B57E;background:#FFFAF5;border-radius:12px;padding:12px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .upl-chips{display:flex;gap:8px;flex-wrap:wrap}
+  .upl-chips button{padding:5px 12px;border-radius:99px;border:1px solid var(--border);background:#fff;font-size:12.5px;font-weight:700;color:#4B5368}
+  .upl-chips button.on{background:var(--navy);border-color:var(--navy);color:#fff}
+  .upl-tbl{max-height:300px}
+  .upl-tbl tr.bad td{background:#FFF5F5}
+  .upl-tbl td.obs{white-space:normal;min-width:220px;color:#991B1B;font-weight:600}
+  .upl-warn{background:#FFF8E6;color:#8A5A00;border-radius:10px;padding:8px 12px;font-size:12.5px}
+  .warn-box{display:flex;gap:12px;align-items:flex-start;background:var(--red-50);color:#991B1B;border-radius:12px;padding:12px 14px}
+  .warn-box .ic{font-size:20px;margin-top:2px}
+  .no-access{display:none}
+</style>
+</head>
+<body>
+<div class="config-shell" id="configShell">
+  <aside class="config-sidebar">
+    <div class="sidebar-brand">
+      <button type="button" class="sidebar-toggle" id="btnMenu" aria-label="Abrir o cerrar menú"><i class="pi pi-bars"></i></button>
+      <strong class="cfg-brand-text">CONFIGURACIÓN</strong>
+    </div>
+
+    <nav class="sidebar-nav" aria-label="Menú de configuración" id="cfgNav">
+      <section class="menu-section">
+        <h3 class="menu-section-title">Seguridad</h3>
+        <a class="menu-link" href="#" data-cfg="sec-usuarios" data-perm="seg-usuarios" data-grp="Seguridad" data-title="Usuarios"><i class="pi pi-user"></i><span class="menu-label">Usuarios</span></a>
+        <a class="menu-link" href="#" data-cfg="sec-roles" data-perm="seg-roles" data-grp="Seguridad" data-title="Roles y permisos"><i class="pi pi-shield"></i><span class="menu-label">Roles y permisos</span></a>
+      </section>
+      <section class="menu-section">
+        <h3 class="menu-section-title">Mantenedores</h3>
+        <a class="menu-link" href="#" data-cfg="sec-productos" data-perm="mant-productos" data-grp="Mantenedores" data-title="Productos"><i class="pi pi-box"></i><span class="menu-label">Productos</span></a>
+        <a class="menu-link" href="#" data-cfg="sec-tipocliente" data-perm="mant-tipocliente" data-grp="Mantenedores" data-title="Tipo de cliente"><i class="pi pi-star"></i><span class="menu-label">Tipo de cliente</span></a>
+        <a class="menu-link" href="#" data-cfg="sec-clientes" data-perm="mant-clientes" data-grp="Mantenedores" data-title="Clientes"><i class="pi pi-users"></i><span class="menu-label">Clientes</span></a>
+        <a class="menu-link" href="#" data-cfg="sec-tablas" data-perm="mant-tablas" data-grp="Mantenedores" data-title="Tablas generales"><i class="pi pi-table"></i><span class="menu-label">Tablas generales</span></a>
+      </section>
+    </nav>
+
+    <a class="portal-link" href="inicio.html"><i class="pi pi-arrow-left"></i><span>Volver al CRM</span></a>
+  </aside>
+
+  <section class="config-content">
+    <header class="config-toolbar">
+      <div class="toolbar-system">
+        <button type="button" class="mobile-menu-toggle" aria-label="Abrir menú de configuración" id="btnMenuMobile"><i class="pi pi-bars"></i></button>
+        <span class="toolbar-icon"><i class="pi pi-cog"></i></span>
+        <div>
+          <p>SIGCOMT · SigOne CRM</p>
+          <strong id="tbTitle">Seguridad › Usuarios</strong>
+        </div>
+      </div>
+      <div class="toolbar-actions" id="userHost"></div>
+    </header>
+
+    <main class="config-main">
+
+      <!-- ===== SEGURIDAD · Usuarios ===== -->
+      <section class="cfg-section" id="sec-usuarios" hidden>
+        <div class="page-head">
+          <div><h1>Usuarios</h1><p>Administra quién entra al CRM y qué rol tiene cada persona</p></div>
+          <button class="btn btn-primary" id="uNew"><i class="pi pi-plus ic"></i>Nuevo usuario</button>
+        </div>
+        <form class="filters-card" id="uFilters">
+          <div class="filter-search"><label for="uQ">BUSCAR</label><div class="input-icon"><i class="pi pi-search ic"></i><input id="uQ" placeholder="Nombre o correo..."></div></div>
+          <div class="filter-select"><label for="uRol">ROL</label><select class="select" id="uRol"></select></div>
+          <div class="filter-select"><label for="uEst">ESTADO</label><select class="select" id="uEst"><option value="">Todos</option><option value="1">Activo</option><option value="0">Inactivo</option></select></div>
+          <button type="submit" class="btn-filter">Filtrar</button>
+        </form>
+        <section class="table-card">
+          <div class="table-card-header"><h2>Lista de usuarios</h2><span id="uCount"></span></div>
+          <div style="overflow:auto"><table class="dgrid"><thead><tr><th style="width:44px">#</th><th>Nombre completo</th><th>Celular</th><th>Área</th><th>Rol</th><th>Estado</th><th class="r" style="width:150px">Acciones</th></tr></thead><tbody id="uGrid"></tbody></table></div>
+          <div class="pager" id="uPager"></div>
+        </section>
+      </section>
+
+      <!-- ===== SEGURIDAD · Roles y permisos ===== -->
+      <section class="cfg-section" id="sec-roles" hidden>
+        <div class="page-head">
+          <div><h1>Roles y permisos</h1><p>Cada rol es de tipo <b>General</b> (ve todo) o <b>Vendedor</b> (ve solo lo suyo) y define qué menús y acciones tiene</p></div>
+          <button class="btn btn-primary" id="rNew"><i class="pi pi-plus ic"></i>Nuevo rol</button>
+        </div>
+        <form class="filters-card" id="rFilters">
+          <div class="filter-search"><label for="rQ">BUSCAR</label><div class="input-icon"><i class="pi pi-search ic"></i><input id="rQ" placeholder="Nombre del rol..."></div></div>
+          <div class="filter-select"><label for="rTipo">TIPO</label><select class="select" id="rTipo"><option value="">Todos</option><option>General</option><option>Vendedor</option></select></div>
+          <div class="filter-select"><label for="rEst">ESTADO</label><select class="select" id="rEst"><option value="">Todos</option><option value="1">Activo</option><option value="0">Inactivo</option></select></div>
+          <button type="submit" class="btn-filter">Filtrar</button>
+        </form>
+        <section class="table-card">
+          <div class="table-card-header"><h2>Lista de roles</h2><span id="rCount"></span></div>
+          <div style="overflow:auto"><table class="dgrid"><thead><tr><th>Rol</th><th>Tipo de rol</th><th>Alcance de datos</th><th>Descripción</th><th>Usuarios</th><th>Estado</th><th class="r" style="width:110px">Acciones</th></tr></thead><tbody id="rGrid"></tbody></table></div>
+          <div class="pager" id="rPager"></div>
+        </section>
+      </section>
+
+      <!-- ===== MANTENEDORES · Tablas generales ===== -->
+      <section class="cfg-section" id="sec-tablas" hidden>
+        <div class="page-head">
+          <div><h1>Tablas generales</h1><p>Valores que alimentan los combos del CRM: documentos, prioridades, formas de pago, etapas…</p></div>
+          <button class="btn btn-primary" id="tNew"><i class="pi pi-plus ic"></i>Nuevo</button>
+        </div>
+        <form class="filters-card" id="tFilters">
+          <div class="filter-search"><label for="tQ">BUSCAR</label><div class="input-icon"><i class="pi pi-search ic"></i><input id="tQ" placeholder="Nombre, código..."></div></div>
+          <div class="filter-select"><label for="tTipo">TIPO DE TABLA</label><select class="select" id="tTipo"></select></div>
+          <div class="filter-select"><label for="tEst">ESTADO</label><select class="select" id="tEst"><option value="">Todos</option><option value="1">Activo</option><option value="0">Inactivo</option></select></div>
+          <button type="submit" class="btn-filter">Filtrar</button>
+        </form>
+        <section class="table-card">
+          <div class="table-card-header"><h2>Lista de registros</h2><span id="tCount"></span></div>
+          <div style="overflow:auto"><table class="dgrid"><thead><tr><th>Código</th><th>Nombre</th><th>Tabla</th><th>Descripción</th><th>Estado</th><th class="r" style="width:110px">Acciones</th></tr></thead><tbody id="tGrid"></tbody></table></div>
+          <div class="pager" id="tPager"></div>
+        </section>
+      </section>
+
+      <!-- ===== MANTENEDORES · Productos ===== -->
+      <section class="cfg-section" id="sec-productos" hidden>
+        <div class="page-head">
+          <div><h1>Productos</h1><p>Catálogo que se usa al crear pedidos en las conversaciones</p></div>
+          <div class="head-actions">
+            <button class="btn btn-ghost" id="pBulk"><i class="pi pi-upload ic"></i>Carga masiva</button>
+            <button class="btn btn-primary" id="pNew"><i class="pi pi-plus ic"></i>Nuevo producto</button>
+          </div>
+        </div>
+        <form class="filters-card" id="pFilters">
+          <div class="filter-search"><label for="pQ">BUSCAR</label><div class="input-icon"><i class="pi pi-search ic"></i><input id="pQ" placeholder="Código o nombre..."></div></div>
+          <div class="filter-select"><label for="pLinea">LÍNEA</label><select class="select" id="pLinea"></select></div>
+          <div class="filter-select"><label for="pEst">ESTADO</label><select class="select" id="pEst"><option value="">Todos</option><option value="1">Activo</option><option value="0">Inactivo</option></select></div>
+          <button type="submit" class="btn-filter">Filtrar</button>
+        </form>
+        <section class="table-card">
+          <div class="table-card-header"><h2>Lista de productos</h2><span id="pCount"></span></div>
+          <div class="bulk-bar" id="pBar" hidden><span id="pSel"></span><span class="sp"></span><button class="btn btn-danger btn-sm" id="pDel"><i class="pi pi-trash ic"></i>Eliminar seleccionados</button></div>
+          <div style="overflow:auto"><table class="dgrid"><thead><tr><th style="width:44px"><input type="checkbox" class="chk" id="pAll" aria-label="Seleccionar todos"></th><th>Código</th><th>Producto</th><th>Línea</th><th>Unidad</th><th class="r">Precio</th><th>Estado</th><th class="r" style="width:110px">Acciones</th></tr></thead><tbody id="pGrid"></tbody></table></div>
+          <div class="pager" id="pPager"></div>
+        </section>
+      </section>
+
+      <!-- ===== MANTENEDORES · Tipo de cliente ===== -->
+      <section class="cfg-section" id="sec-tipocliente" hidden>
+        <div class="page-head">
+          <div><h1>Tipo de cliente</h1><p>Clasifica a tus clientes. El color y la prioridad se ven en Conversaciones</p></div>
+          <button class="btn btn-primary" id="cNew"><i class="pi pi-plus ic"></i>Nuevo tipo</button>
+        </div>
+        <form class="filters-card" id="cFilters">
+          <div class="filter-search"><label for="cQ">BUSCAR</label><div class="input-icon"><i class="pi pi-search ic"></i><input id="cQ" placeholder="Nombre o descripción..."></div></div>
+          <div class="filter-select"><label for="cPrio">PRIORIDAD</label><select class="select" id="cPrio"></select></div>
+          <div class="filter-select"><label for="cEst">ESTADO</label><select class="select" id="cEst"><option value="">Todos</option><option value="1">Activo</option><option value="0">Inactivo</option></select></div>
+          <button type="submit" class="btn-filter">Filtrar</button>
+        </form>
+        <section class="table-card">
+          <div class="table-card-header"><h2>Lista de tipos de cliente</h2><span id="cCount"></span></div>
+          <div style="overflow:auto"><table class="dgrid"><thead><tr><th>Nombre</th><th>Descripción</th><th>Prioridad</th><th>Color</th><th>Clientes</th><th>Estado</th><th class="r" style="width:110px">Acciones</th></tr></thead><tbody id="cGrid"></tbody></table></div>
+          <div class="pager" id="cPager"></div>
+        </section>
+      </section>
+
+      <!-- ===== MANTENEDORES · Clientes ===== -->
+      <section class="cfg-section" id="sec-clientes" hidden>
+        <div class="page-head">
+          <div><h1>Clientes</h1><p>Maestro de clientes. El historial de acciones se consulta en Cartera</p></div>
+          <button class="btn btn-primary" id="kNew"><i class="pi pi-plus ic"></i>Nuevo cliente</button>
+        </div>
+        <form class="filters-card" id="kFilters">
+          <div class="filter-search"><label for="kQ">BUSCAR</label><div class="input-icon"><i class="pi pi-search ic"></i><input id="kQ" placeholder="Nombre, empresa o documento..."></div></div>
+          <div class="filter-select"><label for="kTipo">TIPO DE CLIENTE</label><select class="select" id="kTipo"></select></div>
+          <div class="filter-select"><label for="kEst">ESTADO</label><select class="select" id="kEst"><option value="">Todos</option><option value="1">Activo</option><option value="0">Inactivo</option></select></div>
+          <button type="submit" class="btn-filter">Filtrar</button>
+        </form>
+        <section class="table-card">
+          <div class="table-card-header"><h2>Lista de clientes</h2><span id="kCount"></span></div>
+          <div style="overflow:auto"><table class="dgrid"><thead><tr><th>Cliente</th><th>Tipo de documento</th><th>N.º de documento</th><th>Contacto</th><th>Tipo</th><th>Estado</th><th class="r" style="width:150px">Acciones</th></tr></thead><tbody id="kGrid"></tbody></table></div>
+          <div class="pager" id="kPager"></div>
+        </section>
+      </section>
+
+    </main>
+  </section>
+</div>
+
+<!-- Diálogo genérico (formularios, confirmaciones, permisos, carga masiva) -->
+<div class="modal-bg" id="dlg"><div class="modal" id="dlgBox"></div></div>
+
+<script src="assets/app.js?v=20261119a"></script>
+<script src="assets/store.js?v=20261119a"></script>
+<script>
+if (!canConfig()) {
+  window.CFG_BLOCKED = true;
+  document.body.innerHTML = '<div style="max-width:420px;margin:12vh auto;text-align:center;font-family:\'DM Sans\',sans-serif"><h2 style="font-family:\'Sora\',sans-serif;margin-bottom:10px">Acceso restringido</h2><p style="color:#64748b;margin-bottom:18px">Tu rol no tiene permisos para ver Configuración.</p><a class="btn btn-primary" style="display:inline-flex" href="inicio.html">Volver al CRM</a></div>';
+}
+</script>
+<script src="assets/configuracion.js?v=20261119a"></script>
+</body>
+</html>

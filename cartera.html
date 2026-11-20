@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SigOne CRM · Cartera de clientes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Sora:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/primeicons/primeicons.css">
+<link rel="stylesheet" href="assets/styles.css?v=20261120a">
+<link rel="stylesheet" href="assets/config.css?v=20261120a">
+<style>
+  /* ===== Cartera de clientes: asignar / reasignar ===== */
+  .cw{display:block}
+  .vl{padding:8px}
+  .vl h3{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:#64748b;padding:10px 10px 8px}
+  .vi{display:flex;align-items:center;gap:10px;width:100%;padding:10px;border-radius:10px;text-align:left;cursor:pointer}
+  .vi:hover{background:#F6F7FB}.vi.on{background:rgba(244,119,33,.1)}
+  .vi .avatar{width:34px;height:34px;font-size:12px}
+  .vi b{display:block;font-size:13.5px;color:#202532}.vi small{font-size:12px;color:#64748b}
+  .vi .n{margin-left:auto;font-weight:800;font-family:var(--font-display);color:#202532}
+  .vi.unas .avatar{background:#EEF0F5;color:#64748b}
+  .vi.on .n{color:#e66a17}
+  .ph{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:16px 18px}
+  .ph h3{font-size:16px}.ph small{color:#64748b}
+  .ph .search{width:260px}
+  .bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:10px 18px;background:#171b27;color:#fff;font-size:13.5px}
+  .bar[hidden]{display:none}
+  .bar .select{width:auto;min-width:190px;height:36px;padding:6px 10px;color:#202532}
+  .bar .sp{margin-left:auto;display:flex;gap:8px}
+  .bar .btn-ghost{background:transparent;color:#fff;border-color:rgba(255,255,255,.3)}
+  .chk{width:17px;height:17px;accent-color:#f47721;cursor:pointer}
+  .cat{white-space:nowrap;display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;padding:3px 10px;border-radius:99px;background:var(--t);color:var(--k)}
+  .cat::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--k)}
+  .dgrid tr.sel td{background:#FFF8F2}
+  .note{display:flex;gap:8px;align-items:center;font-size:13px;color:#566071;margin-top:4px}
+  .acts-cell{display:flex;gap:6px;justify-content:flex-end;align-items:center}
+  .mv{display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:end;margin:6px 0 4px}
+  .mv-box{border:1px solid var(--border);border-radius:12px;padding:12px 14px;background:#FAFBFD;min-height:70px}
+  .mv-box small{display:block;font-size:11px;font-weight:800;letter-spacing:.7px;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+  .mv-box b{font-size:14.5px}
+  .mv-box.new{background:#fff;border-color:#C3CBD9}
+  .mv-box .select{height:36px;padding:6px 10px}
+  .mv-arrow{align-self:center;color:#8A92A6;font-size:18px;padding-bottom:4px}
+  .mv-cli{font-size:15px}
+  @media(max-width:560px){.mv{grid-template-columns:1fr}.mv-arrow{transform:rotate(90deg);justify-self:center}}
+</style>
+</head>
+<body data-module="cartera" data-side="cartera">
+<div class="app">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main">
+    <header class="topbar" id="topbar"></header>
+    <main class="content">
+      <div class="page-head">
+        <div><h1>Cartera de clientes</h1><p>Asignación y reasignación de clientes entre vendedores, con el historial de acciones de cada cliente</p></div>
+      </div>
+      <form class="filters-card" id="filters">
+        <div class="filter-search"><label for="q">BUSCAR</label><div class="input-icon"><i class="pi pi-search ic"></i><input id="q" placeholder="Empresa o contacto..."></div></div>
+        <div class="filter-select"><label for="fVen">VENDEDOR</label><select class="select" id="fVen"></select></div>
+        <div class="filter-select wide"><label>FECHA DE REGISTRO</label><div class="rp" data-from="fDesde" data-to="fHasta"></div></div>
+        <button type="submit" class="btn-filter">Filtrar</button>
+      </form>
+      <div class="cw">
+        <section class="card" style="overflow:hidden">
+          <div class="ph"><div><h3 id="ttl"></h3><small id="sub"></small></div></div>
+          <div class="bar" id="bar" hidden>
+            <span id="selN"></span>
+            <div class="sp"><button class="btn btn-primary" id="bMove"></button><button class="btn btn-ghost" id="bClr">Cancelar</button></div>
+          </div>
+          <div style="overflow:auto"><table class="dgrid"><thead><tr><th style="width:44px"><input type="checkbox" class="chk" id="all" aria-label="Seleccionar todos"></th><th>Cliente</th><th>Tipo de cliente</th><th>Registro</th><th>Último pedido</th><th class="r">Monto acumulado</th><th class="r">Acciones</th></tr></thead><tbody id="rows"></tbody></table></div>
+          <div class="pager" id="pager"></div>
+        </section>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- Confirmación -->
+<div class="modal-bg" id="cm"><div class="modal" style="max-width:520px">
+  <div class="modal-h"><h3 id="cTitle"></h3><button type="button" class="icon-btn" id="cClose" aria-label="Cerrar"><i data-icon="x"></i></button></div>
+  <div class="modal-b" id="cBody"></div>
+  <div class="modal-f"><button type="button" class="btn btn-ghost" id="cCancel">Cancelar</button><button class="btn btn-primary" id="cOk"></button></div>
+</div></div>
+
+<!-- Historial de acciones del cliente -->
+<div class="modal-bg" id="hm"><div class="modal" id="hBox"></div></div>
+
+<script src="assets/app.js?v=20261022a"></script>
+<script src="assets/store.js?v=20261119a"></script>
+<script>
+/* =====================================================================
+   Cartera de clientes (Administrador / Supervisor)
+   - Lee los clientes del CRM (store.js): cada uno pertenece a un vendedor o está "Sin asignar".
+   - Se seleccionan uno o varios clientes y se asignan / reasignan a otro vendedor.
+   - Cada asignación o reasignación queda en el historial de acciones del cliente
+     (junto con su creación y sus cambios de tipo).
+   ===================================================================== */
+const $=id=>document.getElementById(id);
+const UN='Sin asignar', AVC=['alt1','alt2','alt4','alt3'];
+const VEND=()=>vendedores().map((n,i)=>({n,av:AVC[i%AVC.length]}));
+const CL=()=>DB.clientes.filter(c=>c.estado==='Activo');
+const owner=c=>c.vendedor||UN;
+const pedsOf=c=>DB.pedidos.filter(p=>p.clienteId===c.id);
+const lastOrder=c=>{ const f=pedsOf(c).map(p=>p.fecha).sort().pop(); return f?fmtFecha(f):'—'; };
+const amountOf=c=>pedsOf(c).reduce((a,p)=>a+pedTotal(p),0);
+const catStyle=n=>{ const k=tipoColors(n); return `--k:${k.dark};--t:${k.tint}`; };
+let cur='', sel=new Set(), page=1, size=PAGE_DEFAULT;
+const isoReg=c=>{ const [d,m,y]=(c.prim||'').split('/'); return y?`${y}-${m}-${d}`:''; };
+const visibles=()=>{ const q=$('q').value.toLowerCase(), d=$('fDesde').value, h=$('fHasta').value;
+  return CL().filter(c=>(!cur||owner(c)===cur) && (clienteNombre(c)+' '+c.nombre).toLowerCase().includes(q) && (!d||isoReg(c)>=d) && (!h||isoReg(c)<=h)); };
+const ICON_BTN=(attr,ic,tip)=>`<button class="table-action table-action--${ic==='history'?'history':'assign'}" ${attr} title="${tip}" aria-label="${tip}">${icon(ic)}</button>`;
+
+function render(){
+  const list=visibles();
+  const pages=Math.max(1,Math.ceil(list.length/size)); if(page>pages) page=pages;
+  const rows=list.slice((page-1)*size,page*size);
+  $('ttl').textContent=!cur?'Todos los clientes':cur===UN?'Clientes sin asignar':'Cartera de '+cur;
+  $('sub').textContent=`${list.length} clientes${cur===UN?' · asígnalos a un vendedor':''}`;
+  const fv=$('fVen'); fv.innerHTML='<option value="">Todos</option>'+VEND().map(v=>`<option>${esc(v.n)}</option>`).join('')+`<option>${UN}</option>`; fv.value=cur;
+  $('rows').innerHTML=rows.length?rows.map(c=>{ const am=amountOf(c);
+    return `<tr class="${sel.has(c.id)?'sel':''}"><td><input type="checkbox" class="chk" data-s="${c.id}" ${sel.has(c.id)?'checked':''} aria-label="Seleccionar ${esc(clienteNombre(c))}"></td>
+      <td><b>${esc(clienteNombre(c))}</b><br><small style="color:var(--muted)">${esc(clienteContacto(c))}</small></td><td><span class="cat" style="${catStyle(c.cat)}">${esc(c.cat)}</span></td><td class="nw">${esc(c.prim||'—')}</td><td class="nw">${lastOrder(c)}</td>
+      <td class="r"><b>${am?'S/ '+am.toLocaleString('es-PE'):'—'}</b></td>
+      <td class="r"><div class="acts-cell">${ICON_BTN(`data-one="${c.id}"`, owner(c)===UN?'plus':'swap', owner(c)===UN?'Asignar vendedor':'Reasignar a otro vendedor')}${ICON_BTN(`data-h="${c.id}"`,'history','Historial de acciones')}</div></td></tr>`; }).join('')
+    :`<tr><td colspan="7" style="padding:30px;text-align:center;color:var(--muted)">${cur===UN?'No hay clientes pendientes de asignar':'Este vendedor no tiene clientes'}</td></tr>`;
+  renderPager($('pager'), { get page(){return page}, set page(v){page=v}, get size(){return size}, set size(v){size=v} }, list.length, 'clientes', render);
+  document.querySelectorAll('[data-s]').forEach(c=>c.onchange=()=>{ c.checked?sel.add(+c.dataset.s):sel.delete(+c.dataset.s); render(); });
+  document.querySelectorAll('[data-one]').forEach(b=>b.onclick=()=>openMove([+b.dataset.one]));
+  document.querySelectorAll('[data-h]').forEach(b=>b.onclick=()=>openHist(+b.dataset.h));
+  $('all').checked=rows.length&&rows.every(r=>sel.has(r.id));
+  // Barra de acción masiva
+  $('bar').hidden=!sel.size;
+  $('selN').textContent=`${sel.size} ${sel.size===1?'cliente seleccionado':'clientes seleccionados'}`;
+  const verbo=verbOf(); $('bMove').innerHTML=icon(verbo==='Reasignar'?'swap':'plus')+verbo;
+  hydrateIcons();
+}
+$('all').onchange=e=>{ visibles().slice((page-1)*size,page*size).forEach(c=>e.target.checked?sel.add(c.id):sel.delete(c.id)); render(); };
+$('q').oninput=()=>{ page=1; render(); };
+$('fVen').onchange=e=>{ cur=e.target.value; sel.clear(); page=1; render(); };
+['fDesde','fHasta'].forEach(i=>$(i).addEventListener('input',()=>{ page=1; render(); }));
+$('filters').addEventListener('submit',e=>{ e.preventDefault(); page=1; render(); });
+$('bClr').onclick=()=>{ sel.clear(); render(); };
+
+// Asignar (clientes sin vendedor) o Reasignar (ya tenían uno); si hay mezcla se indica ambos
+function verbOf(ids=[...sel]){ const un=DB.clientes.filter(c=>ids.includes(c.id)&&owner(c)===UN).length; return !ids.length||un===ids.length?'Asignar':un===0?'Reasignar':'Asignar / reasignar'; }
+// Historial de acciones: creación, modificaciones del cliente, asignaciones y reasignaciones (sin etapa de venta ni estado de pedidos)
+function openHist(id){
+  const c=DB.clientes.find(x=>x.id===id);
+  $('hBox').innerHTML=histModal({ title:'Historial de acciones', sub:clienteNombre(c), items:histOf(c).filter(h=>h.campo!=='Etapa de venta').map(h=>({ field:h.campo, before:h.antes, after:h.desp, date:h.f, user:h.u })) });
+  $('hBox').querySelectorAll('[data-close]').forEach(b=>b.onclick=closeH);
+  $('hm').classList.add('open'); hydrateIcons($('hBox'));
+}
+const closeH=()=>$('hm').classList.remove('open');
+$('hm').addEventListener('click',e=>{ if(e.target===$('hm')) closeH(); });
+
+// Ventana pequeña: vendedor actual → nuevo vendedor
+$('bMove').onclick=()=>openMove([...sel]);
+function openMove(ids){
+  const cs=ids.map(id=>DB.clientes.find(x=>x.id===id)).filter(Boolean); if(!cs.length) return;
+  const verb=verbOf(ids), froms={}; cs.forEach(c=>froms[owner(c)]=(froms[owner(c)]||0)+1);
+  const actual=Object.entries(froms).map(([v,n])=>esc(v)+(cs.length>1?` <small style="display:inline;text-transform:none;letter-spacing:0;font-weight:600">(${n})</small>`:'')).join('<br>');
+  $('cTitle').textContent=verb+' vendedor';
+  $('cBody').innerHTML=`<p class="mv-cli"><b>${cs.length===1?esc(clienteNombre(cs[0])):cs.length+' clientes seleccionados'}</b>${cs.length===1?`<br><small style="color:var(--muted)">${esc(clienteContacto(cs[0]))}</small>`:''}</p>
+    <div class="mv"><div class="mv-box"><small>Vendedor actual</small><b>${actual}</b></div><span class="mv-arrow">${icon('swap')}</span>
+      <div class="mv-box new"><small>Nuevo vendedor</small><select class="select" id="mvTo"><option value="">Elegir vendedor…</option>${VEND().filter(v=>cs.length>1||v.n!==owner(cs[0])).map(v=>`<option>${esc(v.n)}</option>`).join('')}</select></div></div>
+    <label class="note"><input type="checkbox" class="chk" id="cNotif" checked> Notificar a los vendedores involucrados</label>`;
+  $('cOk').textContent=verb; $('cm').classList.add('open'); hydrateIcons($('cBody'));
+  $('cOk').onclick=()=>{
+    const to=$('mvTo').value; if(!to){ toast('Elige el nuevo vendedor'); $('mvTo').focus(); return; }
+    const quien=currentUser().name, desde=new Set(), n=cs.length;
+    cs.forEach(c=>{ const antes=owner(c); if(antes===to) return; desde.add(antes);
+      histOf(c).unshift({ sec:'cartera', campo:antes===UN?'Asignación de vendedor':'Reasignación de vendedor', antes, desp:to, f:ahoraStr(), u:quien });
+      c.vendedor=to; });
+    const antes=[...desde].join(', ');
+    saveDB();
+    if($('cNotif').checked) NOTIFS.unshift({ id:Date.now(), type:'cartera', icon:'swap', t:'Cartera actualizada', d:`${n} ${n===1?'cliente':'clientes'} ${antes===UN?'asignados a':'reasignados de '+antes+' a'} ${to}`, time:'Ahora', unread:true });
+    renderNotifs(); sel.clear(); $('cm').classList.remove('open'); render(); toast(`${n} ${n===1?'cliente':'clientes'} ${verb==='Asignar'?'asignado':'reasignado'}${n===1?'':'s'} a ${to}`); };
+}
+const closeC=()=>$('cm').classList.remove('open');
+$('cClose').onclick=$('cCancel').onclick=closeC;
+$('cm').addEventListener('click',e=>{ if(e.target===$('cm')) closeC(); });
+document.addEventListener('DOMContentLoaded',render);
+</script>
+</body>
+</html>
